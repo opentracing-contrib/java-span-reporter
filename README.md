@@ -41,9 +41,9 @@ span.log(Map.of("loglevel", LogLevel.WARN))
 
 * Add dependency (format depends of your build tool)
 ```
-"io.opentracing.contrib" % "java-loggertracer" % "0.1.0"
+"io.opentracing.contrib" % "java-loggertracer" % "${loggertracer.version}"
 ```
-* Instanciate the LoggerTracer (For using DI, you can take inspiration from [Guice samples](./src/test/java/io/opentracing/contrib/di)
+* Instantiate the LoggerTracer (For using DI, you can take inspiration from [Guice samples](./src/test/java/io/opentracing/contrib/di)
 ):
 ```java
 tracer = ... // if not backend tracer use NoopTracerFactory.create()
