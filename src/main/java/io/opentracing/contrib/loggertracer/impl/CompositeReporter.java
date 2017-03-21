@@ -59,10 +59,10 @@ public class CompositeReporter implements Reporter {
     }
 
     @Override
-    public void log(long timestampMicroseconds, LoggerSpan span, Map<String, ?> event) {
+    public void log(long timestampMicroseconds, LoggerSpan span, Map<String, ?> fields) {
         for(Reporter r: reporters) {
             try {
-                r.log(timestampMicroseconds, span, event);
+                r.log(timestampMicroseconds, span, fields);
             } catch (Exception exc) {
                 exc.printStackTrace();
             }

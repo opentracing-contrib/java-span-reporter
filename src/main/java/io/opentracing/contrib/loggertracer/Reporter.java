@@ -18,5 +18,5 @@ import java.util.Map;
 public interface Reporter {
     void start(long timestampMicroseconds, LoggerSpan span);
     void finish(long timestampMicroseconds, LoggerSpan span);
-    void log(long timestampMicroseconds, LoggerSpan span, Map<String, ?> event);
+    void log(long timestampMicroseconds, LoggerSpan span, Map<String, ?> fields);
 }

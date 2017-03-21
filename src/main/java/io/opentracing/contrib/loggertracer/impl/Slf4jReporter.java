@@ -56,13 +56,13 @@ public class Slf4jReporter implements Reporter {
     }
 
     @Override
-    public void log(long timestampMicroseconds, LoggerSpan span, Map<String, ?> event) {
+    public void log(long timestampMicroseconds, LoggerSpan span, Map<String, ?> fields) {
         LogLevel level = LogLevel.INFO;
         try {
-            LogLevel level0 = (LogLevel) event.get(LogLevel.FIELD_NAME);
+            LogLevel level0 = (LogLevel) fields.get(LogLevel.FIELD_NAME);
             if (level0 != null) {
                 level = level0;
-                event.remove(LogLevel.FIELD_NAME);
+                fields.remove(LogLevel.FIELD_NAME);
             }
         } catch (Exception exc) {
             logger.warn("fail to read value of field {}", LogLevel.FIELD_NAME, exc);
@@ -70,32 +70,32 @@ public class Slf4jReporter implements Reporter {
         switch (level) {
             case TRACE:
                 if (logger.isTraceEnabled()) {
-                    logger.trace(toStructuredMessage(timestampMicroseconds, "log", span, event));
+                    logger.trace(toStructuredMessage(timestampMicroseconds, "log", span, fields));
                 }
                 break;
             case DEBUG:
                 if (logger.isDebugEnabled()) {
-                    logger.debug(toStructuredMessage(timestampMicroseconds, "log", span, event));
+                    logger.debug(toStructuredMessage(timestampMicroseconds, "log", span, fields));
                 }
                 break;
             case WARN:
                 if (logger.isWarnEnabled()) {
-                    logger.warn(toStructuredMessage(timestampMicroseconds, "log", span, event));
+                    logger.warn(toStructuredMessage(timestampMicroseconds, "log", span, fields));
                 }
                 break;
             case ERROR:
                 if (logger.isErrorEnabled()) {
-                    logger.error(toStructuredMessage(timestampMicroseconds, "log", span, event));
+                    logger.error(toStructuredMessage(timestampMicroseconds, "log", span, fields));
                 }
                 break;
             default:
                 if (logger.isInfoEnabled()) {
-                    logger.info(toStructuredMessage(timestampMicroseconds, "log", span, event));
+                    logger.info(toStructuredMessage(timestampMicroseconds, "log", span, fields));
                 }
         }
     }
 
-    protected String toStructuredMessage(long timestampMicroseconds, String action, LoggerSpan span, Map<String,?> logEvent){
+    protected String toStructuredMessage(long timestampMicroseconds, String action, LoggerSpan span, Map<String,?> fields){
         //return "" + (timestampMicroseconds - startAt);
 
         try {
@@ -120,9 +120,9 @@ public class Slf4jReporter implements Reporter {
                 }
             }
             g.writeEndObject();
-            if (logEvent != null && !logEvent.isEmpty()){
-                g.writeObjectFieldStart("event");
-                for(Map.Entry<String,?> kv : logEvent.entrySet()){
+            if (fields != null && !fields.isEmpty()){
+                g.writeObjectFieldStart("fields");
+                for(Map.Entry<String,?> kv : fields.entrySet()){
                     Object v = kv.getValue();
                     if (v instanceof String) {
                         g.writeStringField(kv.getKey(), (String)v);
