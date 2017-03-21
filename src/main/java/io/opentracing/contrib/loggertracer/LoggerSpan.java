@@ -17,6 +17,7 @@ import io.opentracing.Span;
 import io.opentracing.SpanContext;
 import java.util.Collections;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class LoggerSpan implements Span {
     private Span wrapped;
@@ -33,8 +34,8 @@ public class LoggerSpan implements Span {
         this.spanId = spanId;
         this.wrapped = wrapped;
         this.operationName = operationName;
-        this.tags = tags;
-        this.references = references;
+        this.tags = new ConcurrentHashMap<>(tags);
+        this.references = Collections.unmodifiableMap(references);
         startAt = now();
         reporter.start(startAt, this);
     }
