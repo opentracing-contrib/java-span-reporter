@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.UUID;
 
 public class LoggerSpanBuilder implements Tracer.SpanBuilder {
-    private static final String BAGGAGE_SPANID_KEY = "logger.spanId";
+    private static final String BAGGAGE_SPANID_KEY = "log.spanId";
     private Tracer.SpanBuilder wrapped;
     private Reporter reporter;
     private final Map<String, Object> tags = new LinkedHashMap<>();
@@ -40,9 +40,9 @@ public class LoggerSpanBuilder implements Tracer.SpanBuilder {
         if (context instanceof LoggerSpanContext) {
             return ((LoggerSpanContext) context).spanId;
         }
-        for (Map.Entry<String,?> kv: context.baggageItems()) {
+        for (Map.Entry<String,String> kv: context.baggageItems()) {
             if (BAGGAGE_SPANID_KEY.equals(kv.getKey())) {
-                return kv.getValue().toString();
+                return kv.getValue();
             }
         }
         return "";
@@ -101,8 +101,7 @@ public class LoggerSpanBuilder implements Tracer.SpanBuilder {
         Span wspan = wrapped.start();
         String spanId = UUID.randomUUID().toString();
         wspan.setBaggageItem(BAGGAGE_SPANID_KEY, spanId);
-        Span span = new LoggerSpan(wspan, reporter, spanId, operationName, tags, references);
-        return span;
+        return new LoggerSpan(wspan, reporter, spanId, operationName, tags, references);
     }
 
     @Override
