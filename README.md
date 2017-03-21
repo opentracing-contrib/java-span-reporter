@@ -20,8 +20,8 @@ public interface Reporter {
 
 ## Slf4jReporter
 
-* Message are reported as structured message (json)
-* Message at start and at finish are logged with criticity/level TRACE
+* Message is reported as structured message (json)
+* Message at start and at finish is logged with level TRACE
 ```
 22:34:51.913 [main] TRACE tracer - {"ts":139966202861,"elapsed":0,"spanId":"b5b7ef8c-11b9-4df1-93ee-aa56f23d1aec","action":"start","operation":"span-0","tags":{"description":"top level initial span in the original process"},"baggage":{},"references":{}}
 22:34:51.927 [main] TRACE tracer - {"ts":139966299730,"elapsed":0,"spanId":"2a344443-5227-4b5f-8750-f4868269f0ea","action":"start","operation":"span-1","tags":{"description":"the first inner span in the original process"},"baggage":{},"references":{"child_of":"b5b7ef8c-11b9-4df1-93ee-aa56f23d1aec"}}
