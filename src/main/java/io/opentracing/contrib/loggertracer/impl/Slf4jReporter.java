@@ -59,12 +59,13 @@ public class Slf4jReporter implements Reporter {
     public void log(long timestampMicroseconds, LoggerSpan span, Map<String, ?> event) {
         LogLevel level = LogLevel.INFO;
         try {
-            LogLevel level0 = (LogLevel) event.get("logLevel");
+            LogLevel level0 = (LogLevel) event.get(LogLevel.FIELD_NAME);
             if (level0 != null) {
                 level = level0;
-                event.remove("loglevel");
+                event.remove(LogLevel.FIELD_NAME);
             }
-        } catch (Exception ignore) {
+        } catch (Exception exc) {
+            logger.warn("fail to read value of field {}", LogLevel.FIELD_NAME, exc);
         }
         switch (level) {
             case TRACE:

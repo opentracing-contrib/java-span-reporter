@@ -14,5 +14,6 @@
 package io.opentracing.contrib.loggertracer;
 
 public enum LogLevel {
-    TRACE, DEBUG, INFO, WARN, ERROR
+    TRACE, DEBUG, INFO, WARN, ERROR;
+    public static String FIELD_NAME = "log.level";
 }
