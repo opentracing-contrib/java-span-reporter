@@ -22,6 +22,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.StringWriter;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Map;
 
 /**
@@ -42,21 +44,21 @@ public class Slf4jReporter implements Reporter {
     }
 
     @Override
-    public void start(long timestampMicroseconds, LoggerSpan span) {
+    public void start(Instant ts, LoggerSpan span) {
         if (logger.isTraceEnabled()) {
-            logger.trace(toStructuredMessage(timestampMicroseconds, "start", span,null));
+            logger.trace(toStructuredMessage(ts, "start", span,null));
         }
     }
 
     @Override
-    public void finish(long timestampMicroseconds, LoggerSpan span) {
+    public void finish(Instant ts, LoggerSpan span) {
         if (logger.isTraceEnabled()) {
-            logger.trace(toStructuredMessage(timestampMicroseconds, "finish", span, null));
+            logger.trace(toStructuredMessage(ts, "finish", span, null));
         }
     }
 
     @Override
-    public void log(long timestampMicroseconds, LoggerSpan span, Map<String, ?> fields) {
+    public void log(Instant ts, LoggerSpan span, Map<String, ?> fields) {
         LogLevel level = LogLevel.INFO;
         try {
             LogLevel level0 = (LogLevel) fields.get(LogLevel.FIELD_NAME);
@@ -70,32 +72,32 @@ public class Slf4jReporter implements Reporter {
         switch (level) {
             case TRACE:
                 if (logger.isTraceEnabled()) {
-                    logger.trace(toStructuredMessage(timestampMicroseconds, "log", span, fields));
+                    logger.trace(toStructuredMessage(ts, "log", span, fields));
                 }
                 break;
             case DEBUG:
                 if (logger.isDebugEnabled()) {
-                    logger.debug(toStructuredMessage(timestampMicroseconds, "log", span, fields));
+                    logger.debug(toStructuredMessage(ts, "log", span, fields));
                 }
                 break;
             case WARN:
                 if (logger.isWarnEnabled()) {
-                    logger.warn(toStructuredMessage(timestampMicroseconds, "log", span, fields));
+                    logger.warn(toStructuredMessage(ts, "log", span, fields));
                 }
                 break;
             case ERROR:
                 if (logger.isErrorEnabled()) {
-                    logger.error(toStructuredMessage(timestampMicroseconds, "log", span, fields));
+                    logger.error(toStructuredMessage(ts, "log", span, fields));
                 }
                 break;
             default:
                 if (logger.isInfoEnabled()) {
-                    logger.info(toStructuredMessage(timestampMicroseconds, "log", span, fields));
+                    logger.info(toStructuredMessage(ts, "log", span, fields));
                 }
         }
     }
 
-    protected String toStructuredMessage(long timestampMicroseconds, String action, LoggerSpan span, Map<String,?> fields){
+    protected String toStructuredMessage(Instant ts, String action, LoggerSpan span, Map<String,?> fields){
         //return "" + (timestampMicroseconds - startAt);
 
         try {
@@ -103,8 +105,8 @@ public class Slf4jReporter implements Reporter {
             JsonGenerator g = f.createGenerator(w);
 
             g.writeStartObject();
-            g.writeNumberField("ts", timestampMicroseconds);
-            g.writeNumberField("elapsed", timestampMicroseconds - span.startAt);
+            g.writeNumberField("ts", ts.toEpochMilli());
+            g.writeNumberField("elapsed", Duration.between(span.startAt, ts).toMillis());
             g.writeStringField("spanId", span.spanId);
             g.writeStringField("action", action);
             g.writeStringField("operation", span.operationName);

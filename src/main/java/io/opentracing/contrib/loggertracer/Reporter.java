@@ -13,10 +13,11 @@
  */
 package io.opentracing.contrib.loggertracer;
 
+import java.time.Instant;
 import java.util.Map;
 
 public interface Reporter {
-    void start(long timestampMicroseconds, LoggerSpan span);
-    void finish(long timestampMicroseconds, LoggerSpan span);
-    void log(long timestampMicroseconds, LoggerSpan span, Map<String, ?> fields);
+    void start(Instant timestamp, LoggerSpan span);
+    void finish(Instant timestamp, LoggerSpan span);
+    void log(Instant timestamp, LoggerSpan span, Map<String, ?> fields);
 }

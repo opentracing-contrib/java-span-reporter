@@ -15,6 +15,8 @@ package io.opentracing.contrib.loggertracer;
 
 import io.opentracing.Span;
 import io.opentracing.SpanContext;
+
+import java.time.Instant;
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -25,7 +27,7 @@ public class LoggerSpan implements Span {
 
     public final String spanId;
     public String operationName;
-    public final long startAt;
+    public final Instant startAt;
     public final Map<String, Object> tags;
     public final Map<String, String> references;
 
@@ -40,10 +42,14 @@ public class LoggerSpan implements Span {
         reporter.start(startAt, this);
     }
 
-    protected long now(){
-        return System.nanoTime() / 1000l;
+    protected Instant now(){
+        return Instant.now();
     }
 
+    protected Instant ts(long timestampMicroSeconds){
+        // lost of precision
+        return Instant.ofEpochMilli(timestampMicroSeconds / 1000);
+    }
 
     //------------------------------------------------------------------------------------------------------------------
     // Span
@@ -62,7 +68,7 @@ public class LoggerSpan implements Span {
     @Override
     public void finish(long l) {
         wrapped.finish(l);
-        reporter.finish(l, this);
+        reporter.finish(ts(l), this);
     }
 
     @Override
@@ -102,7 +108,7 @@ public class LoggerSpan implements Span {
     @Override
     public Span log(long l, Map<String, ?> map) {
         wrapped = wrapped.log(l, map);
-        toLogger(l, map);
+        toLogger(ts(l), map);
         return this;
     }
 
@@ -116,7 +122,7 @@ public class LoggerSpan implements Span {
     @Override
     public Span log(long l, String event) {
         wrapped.log(l, event);
-        toLogger(l, Collections.singletonMap("event", event));
+        toLogger(ts(l), Collections.singletonMap("event", event));
         return this;
     }
 
@@ -150,11 +156,11 @@ public class LoggerSpan implements Span {
     @Deprecated
     public Span log(long l, String eventName, Object payload) {
         wrapped = wrapped.log(l, eventName, payload);
-        toLogger(l, Collections.singletonMap(eventName, payload));
+        toLogger(ts(l), Collections.singletonMap(eventName, payload));
         return this;
     }
 
-    protected void toLogger(long l, Map<String, ?> map) {
-        reporter.log(l, this, map);
+    protected void toLogger(Instant ts, Map<String, ?> map) {
+        reporter.log(ts, this, map);
     }
 }

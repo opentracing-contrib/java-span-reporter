@@ -42,7 +42,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <build.java.version>1.7</build.java.version>
+        <build.java.version>1.8</build.java.version>
 
         <opentracing-api.version>0.20.10</opentracing-api.version>
         <junit.version>4.12</junit.version>

@@ -16,6 +16,7 @@ package io.opentracing.contrib.loggertracer.impl;
 import io.opentracing.contrib.loggertracer.LoggerSpan;
 import io.opentracing.contrib.loggertracer.Reporter;
 
+import java.time.Instant;
 import java.util.Map;
 
 /**
@@ -37,10 +38,10 @@ public class CompositeReporter implements Reporter {
     }
 
     @Override
-    public void start(long timestampMicroseconds, LoggerSpan span) {
+    public void start(Instant ts, LoggerSpan span) {
         for(Reporter r: reporters) {
             try {
-                r.start(timestampMicroseconds, span);
+                r.start(ts, span);
             } catch (Exception exc) {
                 exc.printStackTrace();
             }
@@ -48,10 +49,10 @@ public class CompositeReporter implements Reporter {
     }
 
     @Override
-    public void finish(long timestampMicroseconds, LoggerSpan span) {
+    public void finish(Instant ts, LoggerSpan span) {
         for(Reporter r: reporters) {
             try {
-                r.finish(timestampMicroseconds, span);
+                r.finish(ts, span);
             } catch (Exception exc) {
                 exc.printStackTrace();
             }
@@ -59,10 +60,10 @@ public class CompositeReporter implements Reporter {
     }
 
     @Override
-    public void log(long timestampMicroseconds, LoggerSpan span, Map<String, ?> fields) {
+    public void log(Instant ts, LoggerSpan span, Map<String, ?> fields) {
         for(Reporter r: reporters) {
             try {
-                r.log(timestampMicroseconds, span, fields);
+                r.log(ts, span, fields);
             } catch (Exception exc) {
                 exc.printStackTrace();
             }
