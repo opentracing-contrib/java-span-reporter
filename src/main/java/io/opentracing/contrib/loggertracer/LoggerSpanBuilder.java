@@ -38,8 +38,10 @@ public class LoggerSpanBuilder implements Tracer.SpanBuilder {
 
     String findSpanId(SpanContext context) {
         if (context instanceof LoggerSpanContext) {
-            return ((LoggerSpanContext) context).spanId;
+            return ((LoggerSpanContext) context).span.spanId;
         }
+        // using BAGGAGE_SPANID_KEY is a fallback
+        // it is not fully reliable because several wrapped spans can share context's baggageItems
         for (Map.Entry<String,String> kv: context.baggageItems()) {
             if (BAGGAGE_SPANID_KEY.equals(kv.getKey())) {
                 return kv.getValue();

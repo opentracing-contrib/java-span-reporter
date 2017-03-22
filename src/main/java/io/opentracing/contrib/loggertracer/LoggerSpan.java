@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class LoggerSpan implements Span {
-    private Span wrapped;
+    protected Span wrapped;
     private final Reporter reporter;
 
     public final String spanId;
@@ -56,7 +56,7 @@ public class LoggerSpan implements Span {
 
     @Override
     public SpanContext context() {
-        return new LoggerSpanContext(wrapped.context(), spanId);
+        return new LoggerSpanContext(this);
     }
 
     @Override

@@ -17,17 +17,19 @@ import io.opentracing.SpanContext;
 
 import java.util.Map;
 
+//HACK to allow LoggerSpanBuilder to retrieve SpanId of span via SpanContext, take care about:
+// * span.wrapped can rewrite content of its context or return a different instance during its lifecycle, so no copy
+// * simpler than implements a special Iterable that will add entry for LoggerSpanContext.BAGGAGE_SPANID_KEY
+// * wrapped.context() could be shared by several wrapped span
 class LoggerSpanContext implements SpanContext {
-    private final SpanContext wrapped;
-    public final String spanId;
+    protected final LoggerSpan span;
 
-    LoggerSpanContext(SpanContext wrapped, String spanId) {
-        this.wrapped = wrapped;
-        this.spanId = spanId;
+    LoggerSpanContext(LoggerSpan span) {
+        this.span = span;
     }
 
     @Override
     public Iterable<Map.Entry<String, String>> baggageItems() {
-        return wrapped.baggageItems();
+        return span.wrapped.context().baggageItems();
     }
 }
