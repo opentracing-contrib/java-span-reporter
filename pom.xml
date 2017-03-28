@@ -21,15 +21,21 @@
 
     <!-- Artifact identification -->
     <groupId>io.opentracing.contrib</groupId>
-    <artifactId>opentracing-loggertracer</artifactId>
+    <artifactId>span-reporter-parent</artifactId>
     <version>0.2.0-SNAPSHOT</version>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
 
     <!-- Project information -->
-    <name>LogTracer</name>
-    <description>OpenTracing Tracer that report traces on log (slf4j)</description>
+    <name>SpanReporter (Parent)</name>
+    <description>OpenTracing Tracer that report traces (on logs, metrics,...)</description>
     <url>https://github.com/opentracing-contrib/java-loggertracer</url>
     <inceptionYear>2017</inceptionYear>
+
+    <modules>
+        <module>span-reporter</module>
+        <module>span-reporter-slf4j</module>
+        <module>span-reporter-examples</module>
+    </modules>
 
     <licenses>
         <license>
@@ -46,9 +52,6 @@
 
         <opentracing-api.version>0.20.10</opentracing-api.version>
         <junit.version>4.12</junit.version>
-        <logback.version>1.1.3</logback.version>
-        <brave.version>4.0.6</brave.version>
-        <hawkular.version>0.13.0.Final</hawkular.version>
 
         <maven-plugin.version>0.3.3</maven-plugin.version>
         <maven-compiler-plugin.version>2.5.1</maven-compiler-plugin.version>
@@ -90,109 +93,31 @@
         </snapshotRepository>
     </distributionManagement>
 
-    <dependencies>
-        <dependency>
-            <groupId>io.opentracing</groupId>
-            <artifactId>opentracing-api</artifactId>
-            <version>${opentracing-api.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.opentracing</groupId>
-            <artifactId>opentracing-noop</artifactId>
-            <version>${opentracing-api.version}</version>
-        </dependency>
-        <!-- for slf4j reporter -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.7.21</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
-            <version>2.6.0</version>
-        </dependency>
-        <!-- Test -->
-        <dependency>
-            <groupId>io.opentracing</groupId>
-            <artifactId>opentracing-mock</artifactId>
-            <version>${opentracing-api.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>javax.inject</groupId>
-            <artifactId>javax.inject</artifactId>
-            <version>1</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.google.inject</groupId>
-            <artifactId>guice</artifactId>
-            <version>4.0</version>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- Samples -->
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-core</artifactId>
-            <version>${logback.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>${logback.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- Hawkular -->
-        <dependency>
-            <groupId>org.hawkular.apm</groupId>
-            <artifactId>hawkular-apm-client-opentracing</artifactId>
-            <version>${hawkular.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.hawkular.apm</groupId>
-            <artifactId>hawkular-apm-trace-publisher-rest-client</artifactId>
-            <version>${hawkular.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- Brave / Zipkin -->
-        <!--
-        "io.zipkin.brave" % "brave-mysql" % braveVersion,
-        "io.zipkin.brave" % "brave-okhttp" % braveVersion,
-        "io.zipkin.brave" % "brave-p6spy" % braveVersion,
-        -->
-        <dependency>
-            <groupId>io.zipkin.reporter</groupId>
-            <artifactId>zipkin-sender-okhttp3</artifactId>
-            <version>0.6.12</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.zipkin.brave</groupId>
-            <artifactId>brave</artifactId>
-            <version>${brave.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.opentracing.brave</groupId>
-            <artifactId>brave-opentracing</artifactId>
-            <version>0.18.1</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>io.opentracing</groupId>
+                <artifactId>opentracing-api</artifactId>
+                <version>${opentracing-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.opentracing</groupId>
+                <artifactId>opentracing-noop</artifactId>
+                <version>${opentracing-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.opentracing</groupId>
+                <artifactId>opentracing-mock</artifactId>
+                <version>${opentracing-api.version}</version>
+            </dependency>
+            <!-- Test -->
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
         <pluginManagement>
@@ -218,6 +143,7 @@
                     <showDeprecation>true</showDeprecation>
                 </configuration>
             </plugin>
+            <!--
             <plugin>
                 <groupId>com.mycila</groupId>
                 <artifactId>license-maven-plugin</artifactId>
@@ -233,8 +159,8 @@
                         <exclude>**/.idea/**</exclude>
                         <exclude>LICENSE</exclude>
                         <exclude>**/*.md</exclude>
-                        <exclude>src/test/resources/**</exclude>
-                        <exclude>src/main/resources/**</exclude>
+                        <exclude>*/src/test/resources/**</exclude>
+                        <exclude>*/src/main/resources/**</exclude>
                     </excludes>
                     <strictCheck>true</strictCheck>
                 </configuration>
@@ -254,6 +180,7 @@
                     </execution>
                 </executions>
             </plugin>
+            -->
             <plugin>
                 <artifactId>maven-release-plugin</artifactId>
                 <version>${maven-release-plugin.version}</version>
