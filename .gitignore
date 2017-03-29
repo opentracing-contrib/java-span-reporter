@@ -18,3 +18,11 @@ hs_err_pid*
 # IntelliJ project files
 .idea/
 *.iml
+
+# vscode
+.vscode
+
+# Eclipse
+.project
+.classpath
+.settings
