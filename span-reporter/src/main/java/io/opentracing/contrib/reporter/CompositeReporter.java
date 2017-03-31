@@ -11,10 +11,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package io.opentracing.contrib.loggertracer.impl;
-
-import io.opentracing.contrib.loggertracer.LoggerSpan;
-import io.opentracing.contrib.loggertracer.Reporter;
+package io.opentracing.contrib.reporter;
 
 import java.time.Instant;
 import java.util.Map;
@@ -24,9 +21,9 @@ import java.util.Map;
  * Could used to call a reporter to log system AND a reporter to metrics.
  * <code>
  *     Tracer tracer = ...
- *     tracer = new LoggerTracer(tracer, new CompositeReporter(
- *         new Slf4jReporter(LoggerFactory.getLogger("tracer")),
- *         new DropwizardMetricsReporter(...)
+ *     tracer = new TracerR(tracer, new CompositeReporter(
+ *         loggerReporter,
+ *         metricsReporter
  *     ));
  * </code>
  */
@@ -38,7 +35,7 @@ public class CompositeReporter implements Reporter {
     }
 
     @Override
-    public void start(Instant ts, LoggerSpan span) {
+    public void start(Instant ts, SpanR span) {
         for(Reporter r: reporters) {
             try {
                 r.start(ts, span);
@@ -49,7 +46,7 @@ public class CompositeReporter implements Reporter {
     }
 
     @Override
-    public void finish(Instant ts, LoggerSpan span) {
+    public void finish(Instant ts, SpanR span) {
         for(Reporter r: reporters) {
             try {
                 r.finish(ts, span);
@@ -60,7 +57,7 @@ public class CompositeReporter implements Reporter {
     }
 
     @Override
-    public void log(Instant ts, LoggerSpan span, Map<String, ?> fields) {
+    public void log(Instant ts, SpanR span, Map<String, ?> fields) {
         for(Reporter r: reporters) {
             try {
                 r.log(ts, span, fields);

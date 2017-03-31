@@ -1,13 +1,13 @@
 [![Build Status][ci-img]][ci] [![Released Version][maven-img]][maven]
 
-# LoggerTracer for Java
-LoggerTracer forward to backend Tracer and reports trace into Reporter.
+# SpanReporter for Java
+SpanReporter forward to backend Tracer and reports trace into Reporter.
 
 ```java
 public interface Reporter {
-    void start(long timestampMicroseconds, LoggerSpan span);
-    void finish(long timestampMicroseconds, LoggerSpan span);
-    void log(long timestampMicroseconds, LoggerSpan span, Map<String, ?> event);
+    void start(long timestampMicroseconds, SpanR span);
+    void finish(long timestampMicroseconds, SpanR span);
+    void log(long timestampMicroseconds, SpanR span, Map<String, ?> event);
 }
 ```
 ## Use Case
@@ -41,13 +41,13 @@ span.log(Map.of("loglevel", LogLevel.WARN))
 
 * Add dependency (format depends of your build tool)
 ```
-"io.opentracing.contrib" % "java-loggertracer" % "${loggertracer.version}"
+"io.opentracing.contrib" % "java-span-reporter" % "${span-reporter.version}"
 ```
-* Instantiate the LoggerTracer (For using DI, you can take inspiration from [Guice samples](./src/test/java/io/opentracing/contrib/di)
+* Instantiate the TracerR (For using DI, you can take inspiration from [Guice samples](./src/test/java/io/opentracing/contrib/di)
 ):
 ```java
 tracer = ... // if not backend tracer use NoopTracerFactory.create()
-tracer = new LoggerTracer(tracer, new Slf4jReporter(LoggerFactory.getLogger("tracer")));
+tracer = new TracerR(tracer, new Slf4jReporter(LoggerFactory.getLogger("tracer")));
 ```
 * Setup your logger (example below use logback, but any slf4j compatible logger should work)
     * add dependencies
@@ -61,7 +61,7 @@ tracer = new LoggerTracer(tracer, new Slf4jReporter(LoggerFactory.getLogger("tra
 
 ## Custom Reporter(s)
 
-Developer can provide its own [Reporter](./src/main/java/opentracing/contrib/loggertracer/Reporter.java):
+Developer can provide its own [Reporter](./src/main/java/opentracing/contrib/reporter/Reporter.java):
 * to report log in an other log system
 * to report log in an other format
 * to report metrics about span/operation (histogram, nb calls, duration, ...)
@@ -69,7 +69,7 @@ Developer can provide its own [Reporter](./src/main/java/opentracing/contrib/log
 To report to several Reporters at once, you can use the CompositeReporter:
 ```java
 Tracer tracer = ...
-tracer = new LoggerTracer(tracer, new CompositeReporter(
+tracer = new TracerR(tracer, new CompositeReporter(
     new Slf4jReporter(LoggerFactory.getLogger("tracer")),
     new DropwizardMetricsReporter(...)
 ));

@@ -16,8 +16,8 @@ package io.opentracing.contrib.di;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import io.opentracing.Tracer;
-import io.opentracing.contrib.loggertracer.LoggerTracer;
-import io.opentracing.contrib.loggertracer.impl.Slf4jReporter;
+import io.opentracing.contrib.reporter.TracerR;
+import io.opentracing.contrib.reporter.slf4j.Slf4jReporter;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Named;
@@ -32,6 +32,6 @@ public class LoggerTracerModule extends AbstractModule {
     @Provides
     @Singleton
     protected Tracer tracer(@Named("backend") Tracer tracer) {
-        return new LoggerTracer(tracer, new Slf4jReporter(LoggerFactory.getLogger("tracer")));
+        return new TracerR(tracer, new Slf4jReporter(LoggerFactory.getLogger("tracer")));
     }
 }

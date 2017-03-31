@@ -11,13 +11,13 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package io.opentracing.contrib.loggertracer;
+package io.opentracing.contrib.reporter;
 
 import io.opentracing.SpanContext;
 import io.opentracing.Tracer;
 import io.opentracing.propagation.Format;
 
-public class LoggerTracer  implements Tracer {
+public class TracerR implements Tracer {
     final Tracer wrapped;
     final Reporter reporter;
 
@@ -25,14 +25,14 @@ public class LoggerTracer  implements Tracer {
      * @param wrapped the backend tracer, if you don't want a wrapped tracer use NoopTracerFactory.create()
      * @param reporter the reporter to use (eg )) )
      */
-    public LoggerTracer(Tracer wrapped, Reporter reporter) {
+    public TracerR(Tracer wrapped, Reporter reporter) {
         this.wrapped = wrapped;
         this.reporter = reporter;
     }
 
     @Override
     public SpanBuilder buildSpan(String s) {
-        return new LoggerSpanBuilder(wrapped.buildSpan(s), reporter, s);
+        return new SpanBuilderR(wrapped.buildSpan(s), reporter, s);
     }
 
     @Override

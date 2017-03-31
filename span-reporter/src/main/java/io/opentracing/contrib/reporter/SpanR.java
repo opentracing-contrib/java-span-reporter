@@ -11,7 +11,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package io.opentracing.contrib.loggertracer;
+package io.opentracing.contrib.reporter;
 
 import io.opentracing.Span;
 import io.opentracing.SpanContext;
@@ -21,7 +21,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class LoggerSpan implements Span {
+public class SpanR implements Span {
     protected Span wrapped;
     private final Reporter reporter;
 
@@ -31,7 +31,7 @@ public class LoggerSpan implements Span {
     public final Map<String, Object> tags;
     public final Map<String, String> references;
 
-    public LoggerSpan(Span wrapped, Reporter reporter, String spanId, String operationName, Map<String,Object> tags, Map<String, String> references) {
+    public SpanR(Span wrapped, Reporter reporter, String spanId, String operationName, Map<String,Object> tags, Map<String, String> references) {
         this.reporter = reporter;
         this.spanId = spanId;
         this.wrapped = wrapped;
@@ -56,7 +56,7 @@ public class LoggerSpan implements Span {
 
     @Override
     public SpanContext context() {
-        return new LoggerSpanContext(this);
+        return new SpanContextR(this);
     }
 
     @Override

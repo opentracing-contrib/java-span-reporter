@@ -11,13 +11,13 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package io.opentracing.contrib.loggertracer;
+package io.opentracing.contrib.reporter;
 
 import java.time.Instant;
 import java.util.Map;
 
 public interface Reporter {
-    void start(Instant timestamp, LoggerSpan span);
-    void finish(Instant timestamp, LoggerSpan span);
-    void log(Instant timestamp, LoggerSpan span, Map<String, ?> fields);
+    void start(Instant timestamp, SpanR span);
+    void finish(Instant timestamp, SpanR span);
+    void log(Instant timestamp, SpanR span, Map<String, ?> fields);
 }

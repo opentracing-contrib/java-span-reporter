@@ -1,1 +1,1 @@
-io.opentracing.contrib.loggertracer.impl.DefaultLoggerTracer
+io.opentracing.contrib.reporter.slf4j.DefaultLoggerTracer

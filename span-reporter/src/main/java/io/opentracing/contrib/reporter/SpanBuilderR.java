@@ -11,7 +11,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package io.opentracing.contrib.loggertracer;
+package io.opentracing.contrib.reporter;
 
 import io.opentracing.References;
 import io.opentracing.Span;
@@ -22,7 +22,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class LoggerSpanBuilder implements Tracer.SpanBuilder {
+public class SpanBuilderR implements Tracer.SpanBuilder {
     private static final String BAGGAGE_SPANID_KEY = "log.spanId";
     private Tracer.SpanBuilder wrapped;
     private Reporter reporter;
@@ -30,15 +30,15 @@ public class LoggerSpanBuilder implements Tracer.SpanBuilder {
     private final Map<String, String> references = new LinkedHashMap<>();
     private String operationName;
 
-    LoggerSpanBuilder(Tracer.SpanBuilder wrapped, Reporter reporter, String operationName){
+    SpanBuilderR(Tracer.SpanBuilder wrapped, Reporter reporter, String operationName){
         this.wrapped = wrapped;
         this.reporter = reporter;
         this.operationName = operationName;
     }
 
     String findSpanId(SpanContext context) {
-        if (context instanceof LoggerSpanContext) {
-            return ((LoggerSpanContext) context).span.spanId;
+        if (context instanceof SpanContextR) {
+            return ((SpanContextR) context).span.spanId;
         }
         // using BAGGAGE_SPANID_KEY is a fallback
         // it is not fully reliable because several wrapped spans can share context's baggageItems
@@ -103,7 +103,7 @@ public class LoggerSpanBuilder implements Tracer.SpanBuilder {
         Span wspan = wrapped.start();
         String spanId = UUID.randomUUID().toString();
         wspan.setBaggageItem(BAGGAGE_SPANID_KEY, spanId);
-        return new LoggerSpan(wspan, reporter, spanId, operationName, tags, references);
+        return new SpanR(wspan, reporter, spanId, operationName, tags, references);
     }
 
     @Override

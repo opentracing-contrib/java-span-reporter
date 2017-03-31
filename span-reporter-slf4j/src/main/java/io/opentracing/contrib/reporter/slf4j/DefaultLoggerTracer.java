@@ -11,20 +11,20 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package io.opentracing.contrib.loggertracer.impl;
+package io.opentracing.contrib.reporter.slf4j;
 
 import io.opentracing.NoopTracerFactory;
-import io.opentracing.contrib.loggertracer.LoggerTracer;
+import io.opentracing.contrib.reporter.TracerR;
 import org.slf4j.LoggerFactory;
 
 /**
- * A LoggerTracer with a zero args Constructor and default configuration.
+ * A TracerR with a zero args Constructor and default configuration.
  * It's the implementation use by ServiceLoader (META-INF/services/io.opentracing.Tracer)
  * <code>
- *    new LoggerTracer(NoopTracerFactory.create(), new Slf4jReporter(LoggerFactory.getLogger("tracer")));
+ *    new TracerR(NoopTracerFactory.create(), new Slf4jReporter(LoggerFactory.getLogger("tracer")));
  * </code>
  */
-public final class DefaultLoggerTracer extends LoggerTracer{
+public final class DefaultLoggerTracer extends TracerR {
 
     /**
      * No args constructor used by Service Loader

@@ -11,20 +11,20 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package io.opentracing.contrib.loggertracer;
+package io.opentracing.contrib.reporter;
 
 import io.opentracing.SpanContext;
 
 import java.util.Map;
 
-//HACK to allow LoggerSpanBuilder to retrieve SpanId of span via SpanContext, take care about:
+//HACK to allow SpanBuilderR to retrieve SpanId of span via SpanContext, take care about:
 // * span.wrapped can rewrite content of its context or return a different instance during its lifecycle, so no copy
-// * simpler than implements a special Iterable that will add entry for LoggerSpanContext.BAGGAGE_SPANID_KEY
+// * simpler than implements a special Iterable that will add entry for SpanContextR.BAGGAGE_SPANID_KEY
 // * wrapped.context() could be shared by several wrapped span
-class LoggerSpanContext implements SpanContext {
-    protected final LoggerSpan span;
+class SpanContextR implements SpanContext {
+    protected final SpanR span;
 
-    LoggerSpanContext(LoggerSpan span) {
+    SpanContextR(SpanR span) {
         this.span = span;
     }
 

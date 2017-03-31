@@ -11,13 +11,13 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package io.opentracing.contrib.loggertracer.impl;
+package io.opentracing.contrib.reporter.slf4j;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
-import io.opentracing.contrib.loggertracer.LogLevel;
-import io.opentracing.contrib.loggertracer.LoggerSpan;
-import io.opentracing.contrib.loggertracer.Reporter;
+import io.opentracing.contrib.reporter.LogLevel;
+import io.opentracing.contrib.reporter.SpanR;
+import io.opentracing.contrib.reporter.Reporter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,21 +44,21 @@ public class Slf4jReporter implements Reporter {
     }
 
     @Override
-    public void start(Instant ts, LoggerSpan span) {
+    public void start(Instant ts, SpanR span) {
         if (logger.isTraceEnabled()) {
             logger.trace(toStructuredMessage(ts, "start", span,null));
         }
     }
 
     @Override
-    public void finish(Instant ts, LoggerSpan span) {
+    public void finish(Instant ts, SpanR span) {
         if (logger.isTraceEnabled()) {
             logger.trace(toStructuredMessage(ts, "finish", span, null));
         }
     }
 
     @Override
-    public void log(Instant ts, LoggerSpan span, Map<String, ?> fields) {
+    public void log(Instant ts, SpanR span, Map<String, ?> fields) {
         LogLevel level = LogLevel.INFO;
         try {
             LogLevel level0 = (LogLevel) fields.get(LogLevel.FIELD_NAME);
@@ -97,7 +97,7 @@ public class Slf4jReporter implements Reporter {
         }
     }
 
-    protected String toStructuredMessage(Instant ts, String action, LoggerSpan span, Map<String,?> fields){
+    protected String toStructuredMessage(Instant ts, String action, SpanR span, Map<String,?> fields){
         //return "" + (timestampMicroseconds - startAt);
 
         try {

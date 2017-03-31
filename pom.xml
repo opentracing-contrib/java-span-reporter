@@ -28,7 +28,7 @@
     <!-- Project information -->
     <name>SpanReporter (Parent)</name>
     <description>OpenTracing Tracer that report traces (on logs, metrics,...)</description>
-    <url>https://github.com/opentracing-contrib/java-loggertracer</url>
+    <url>https://github.com/opentracing-contrib/java-span-reporter</url>
     <inceptionYear>2017</inceptionYear>
 
     <modules>
@@ -71,21 +71,21 @@
     </developers>
 
     <scm>
-        <url>https://github.com/opentracing-contrib/java-loggertracer</url>
-        <connection>scm:git:https://github.com/opentracing-contrib/java-loggertracer.git</connection>
-        <developerConnection>scm:git:https://github.com/opentracing-contrib/java-loggertracer.git</developerConnection>
+        <url>https://github.com/opentracing-contrib/java-span-reporter</url>
+        <connection>scm:git:https://github.com/opentracing-contrib/java-span-reporter.git</connection>
+        <developerConnection>scm:git:https://github.com/opentracing-contrib/java-span-reporter.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
 
     <issueManagement>
         <system>Github</system>
-        <url>https://github.com/opentracing-contrib/java-loggertracer/issues</url>
+        <url>https://github.com/opentracing-contrib/java-span-reporter/issues</url>
     </issueManagement>
 
     <distributionManagement>
         <repository>
             <id>bintray</id>
-            <url>https://api.bintray.com/maven/opentracing/maven/java-loggertracer/;publish=1</url>
+            <url>https://api.bintray.com/maven/opentracing/maven/java-span-reporter/;publish=1</url>
         </repository>
         <snapshotRepository>
             <id>jfrog-snapshots</id>
@@ -198,7 +198,7 @@
                 <configuration>
                     <subject>opentracing</subject>
                     <repo>maven</repo>
-                    <packageName>java-loggertracer</packageName>
+                    <packageName>java-span-reporter</packageName>
                 </configuration>
             </plugin>
         </plugins>
