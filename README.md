@@ -23,16 +23,23 @@ public interface Reporter {
 * Message is reported as structured message (json)
 * Message at start and at finish is logged with level TRACE
 ```
-22:34:51.913 [main] TRACE tracer - {"ts":139966202861,"elapsed":0,"spanId":"b5b7ef8c-11b9-4df1-93ee-aa56f23d1aec","action":"start","operation":"span-0","tags":{"description":"top level initial span in the original process"},"baggage":{},"references":{}}
-22:34:51.927 [main] TRACE tracer - {"ts":139966299730,"elapsed":0,"spanId":"2a344443-5227-4b5f-8750-f4868269f0ea","action":"start","operation":"span-1","tags":{"description":"the first inner span in the original process"},"baggage":{},"references":{"child_of":"b5b7ef8c-11b9-4df1-93ee-aa56f23d1aec"}}
-22:34:51.928 [main] TRACE tracer - {"ts":139966300031,"elapsed":0,"spanId":"3a308316-3205-4d25-ada5-f14c5dfd1539","action":"start","operation":"span-2","tags":{"description":"the second inner span in the original process"},"baggage":{},"references":{"child_of":"2a344443-5227-4b5f-8750-f4868269f0ea"}}
-22:34:51.928 [main] TRACE tracer - {"ts":139966300276,"elapsed":248,"spanId":"3a308316-3205-4d25-ada5-f14c5dfd1539","action":"finish","operation":"span-2","tags":{"description":"the second inner span in the original process"},"baggage":{},"references":{"child_of":"2a344443-5227-4b5f-8750-f4868269f0ea"}}
-22:34:51.928 [main] TRACE tracer - {"ts":139966300391,"elapsed":685,"spanId":"2a344443-5227-4b5f-8750-f4868269f0ea","action":"finish","operation":"span-1","tags":{"description":"the first inner span in the original process"},"baggage":{},"references":{"child_of":"b5b7ef8c-11b9-4df1-93ee-aa56f23d1aec"}}
-22:34:51.928 [main] TRACE tracer - {"ts":139966300495,"elapsed":103824,"spanId":"b5b7ef8c-11b9-4df1-93ee-aa56f23d1aec","action":"finish","operation":"span-0","tags":{"description":"top level initial span in the original process","http.url":"/orders"},"baggage":{},"references":{}}
+19:48:36.828 [main] TRACE tracer - {"ts":1490982516828,"elapsed":0,"spanId":"d4f6df3d-8dc0-4287-b1a0-1b2bc52978c6","action":"start","operation":"span-0","tags":{"description":"top level initial span in the original process"},"baggage":{},"references":{}}
+19:48:36.828 [main] TRACE tracer - {"ts":1490982516828,"elapsed":0,"spanId":"da7d843a-4564-4480-a6cb-19550c24a344","action":"start","operation":"span-1","tags":{"description":"the first inner span in the original process"},"baggage":{},"references":{"child_of":"d4f6df3d-8dc0-4287-b1a0-1b2bc52978c6"}}
+19:48:36.828 [main] TRACE tracer - {"ts":1490982516828,"elapsed":0,"spanId":"c4bf987f-2d0c-49f1-87bd-a23930570b96","action":"start","operation":"span-2","tags":{"description":"the second inner span in the original process"},"baggage":{},"references":{"child_of":"da7d843a-4564-4480-a6cb-19550c24a344"}}
+19:48:36.841 [main] TRACE tracer - {"ts":1490982516841,"elapsed":13,"spanId":"c4bf987f-2d0c-49f1-87bd-a23930570b96","action":"finish","operation":"span-2","tags":{"description":"the second inner span in the original process"},"baggage":{},"references":{"child_of":"da7d843a-4564-4480-a6cb-19550c24a344"}}
+19:48:36.841 [main] TRACE tracer - {"ts":1490982516841,"elapsed":13,"spanId":"da7d843a-4564-4480-a6cb-19550c24a344","action":"finish","operation":"span-1","tags":{"description":"the first inner span in the original process"},"baggage":{},"references":{"child_of":"d4f6df3d-8dc0-4287-b1a0-1b2bc52978c6"}}
+19:48:36.841 [main] TRACE tracer - {"ts":1490982516841,"elapsed":13,"spanId":"d4f6df3d-8dc0-4287-b1a0-1b2bc52978c6","action":"finish","operation":"span-0","tags":{"description":"top level initial span in the original process","http.url":"/orders"},"baggage":{},"references":{}}
 ```
 * Message for Span.log report with level INFO by default, the level could be set explicitly by setting the key "loglevel"
 ```java
-span.log(Map.of("loglevel", LogLevel.WARN))
+span.log("blablabala");
+span.log(MapMaker.fields(LogLevel.FIELD_NAME, LogLevel.DEBUG, "k0", "v0", "k1", 42));
+span.log(MapMaker.fields(LogLevel.FIELD_NAME, LogLevel.WARN, "k0", "v0", "ex", new Exception("boom !")));
+```
+```
+22:16:23.911 [main] INFO  tracer - {"ts":1490991383911,"elapsed":1,"spanId":"dbebbda2-501e-4461-b9c6-32020df8008f","action":"log","operation":"span-2","tags":{"description":"the second inner span in the original process"},"fields":{"event":"blablabala"}}
+22:16:23.911 [main] DEBUG tracer - {"ts":1490991383911,"elapsed":1,"spanId":"dbebbda2-501e-4461-b9c6-32020df8008f","action":"log","operation":"span-2","tags":{"description":"the second inner span in the original process"},"fields":{"k0":"v0","k1":42.0}}
+22:16:23.911 [main] WARN  tracer - {"ts":1490991383911,"elapsed":1,"spanId":"dbebbda2-501e-4461-b9c6-32020df8008f","action":"log","operation":"span-2","tags":{"description":"the second inner span in the original process"},"fields":{"ex":"java.lang.Exception: boom !\n\tat examples.Sample01.run0(Sample01.java:92)\n\tat examples.Sample01.main(Sample01.java:45)\n","k0":"v0"}}
 ```
 
 # Usage

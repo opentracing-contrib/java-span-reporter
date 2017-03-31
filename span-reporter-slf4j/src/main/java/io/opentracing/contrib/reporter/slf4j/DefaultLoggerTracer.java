@@ -30,7 +30,7 @@ public final class DefaultLoggerTracer extends TracerR {
      * No args constructor used by Service Loader
      */
     public DefaultLoggerTracer() {
-        super(NoopTracerFactory.create(), new Slf4jReporter(LoggerFactory.getLogger("tracer")));
+        super(NoopTracerFactory.create(), new Slf4jReporter(LoggerFactory.getLogger("tracer"), true));
     }
 
 }
