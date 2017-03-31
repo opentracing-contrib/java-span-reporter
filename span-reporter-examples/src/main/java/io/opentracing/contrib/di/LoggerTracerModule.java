@@ -32,6 +32,6 @@ public class LoggerTracerModule extends AbstractModule {
     @Provides
     @Singleton
     protected Tracer tracer(@Named("backend") Tracer tracer) {
-        return new TracerR(tracer, new Slf4jReporter(LoggerFactory.getLogger("tracer")));
+        return new TracerR(tracer, new Slf4jReporter(LoggerFactory.getLogger("tracer"), true));
     }
 }

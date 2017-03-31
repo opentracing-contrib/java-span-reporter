@@ -21,6 +21,7 @@ import io.opentracing.contrib.reporter.Reporter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.time.Duration;
 import java.time.Instant;
@@ -37,10 +38,12 @@ import java.util.Map;
 public class Slf4jReporter implements Reporter {
     private final Logger logger;
     private final JsonFactory f = new JsonFactory();
+    private final boolean includeStackTraceInStructuredLog;
 
-    public Slf4jReporter(Logger logger) {
+    public Slf4jReporter(Logger logger, boolean includeStackTraceInStructuredLog) {
         LoggerFactory.getLogger(this.getClass()).info("{reporter: 'init'}");
         this.logger = logger;
+        this.includeStackTraceInStructuredLog = includeStackTraceInStructuredLog;
     }
 
     @Override
@@ -132,6 +135,19 @@ public class Slf4jReporter implements Reporter {
                         g.writeNumberField(kv.getKey(), ((Number) v).doubleValue());
                     } else if (v instanceof Boolean) {
                         g.writeBooleanField(kv.getKey(), (Boolean) v);
+                    } else if (v instanceof Throwable){
+                        if (includeStackTraceInStructuredLog) {
+                            try (StringWriter w2 = new StringWriter()) {
+                                ((Throwable) v).printStackTrace(new PrintWriter(w2));
+                                g.writeStringField(kv.getKey(), w2.toString());
+                            }catch (Exception ignore){
+                                g.writeStringField(kv.getKey(), String.valueOf(v));
+                            }
+                        } else {
+                            g.writeStringField(kv.getKey(), String.valueOf(v));
+                        }
+                    } else {
+                        g.writeStringField(kv.getKey(), String.valueOf(v));
                     }
                 }
                 g.writeEndObject();
