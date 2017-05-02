@@ -48,7 +48,7 @@ span.log(MapMaker.fields(LogLevel.FIELD_NAME, LogLevel.WARN, "k0", "v0", "ex", n
 
 * Add dependency (format depends of your build tool)
 ```
-"io.opentracing.contrib" % "java-span-reporter" % "${span-reporter.version}"
+"io.opentracing.contrib" % "span-reporter" % "${span-reporter.version}"
 ```
 * Instantiate the TracerR (For using DI, you can take inspiration from [Guice samples](./src/test/java/io/opentracing/contrib/di)
 ):
@@ -81,3 +81,14 @@ tracer = new TracerR(tracer, new CompositeReporter(
     new DropwizardMetricsReporter(...)
 ));
 ```
+
+## Use as a Logging Tracer
+
+To use the java span reporter as a simple Logging Tracer via the
+[TracerResolver](https://github.com/opentracing-contrib/java-tracerresolver), just add the following dependency
+(format depends of your build tool):
+
+```
+"io.opentracing.contrib" % "span-reporter-resolver" % "${span-reporter.version}"
+```
+
