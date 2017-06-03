@@ -1,0 +1,78 @@
+//------------------------------------------------------------------------------
+// Global
+// content of this section could be placed in an other script
+//------------------------------------------------------------------------------
+plugins {
+  id "com.github.hierynomus.license" version "0.14.0"
+  id "com.jfrog.bintray" version "1.7.3"
+}
+
+
+
+allprojects {
+  apply plugin: 'license'
+  //apply plugin: 'nebula.lint'
+  //gradleLint.rules = ['all-dependency']
+
+  project.version = "git describe --always --dirty".execute().text.trim()
+  println("version : '${project.version}'")
+  group = "io.opentracing.contrib"
+  project.ext.description="OpenTracing Tracer that report traces (on logs, metrics,...)"
+  project.ext.website_url="https://github.com/opentracing-contrib/${project.name}"
+  project.ext.scm_url="https://github.com/opentracing-contrib/${project.name}"
+  project.ext.license_name="Apache-2.0" // use value of bintray license enum
+  project.ext.license_url="https://www.apache.org/licenses/LICENSE-2.0.txt"
+  project.ext.license_year=Calendar.getInstance().get(Calendar.YEAR)
+  project.ext.license_owner="The OpenTracing Authors"
+}
+
+subprojects {
+  apply plugin: 'java'
+  apply plugin: 'maven'
+
+  repositories {
+    jcenter()
+    //maven { url "https://jitpack.io" }
+  }
+
+  sourceCompatibility = JavaVersion.VERSION_1_8
+  targetCompatibility = JavaVersion.VERSION_1_8
+  [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+  task sourcesJar(type: Jar) {
+    from sourceSets.main.allSource
+    classifier = 'sources'
+  }
+
+  license {
+    header = rootProject.file("src/etc/header.txt")
+    strictCheck = true
+    ext.license_year = project.license_year
+    ext.license_owner = license_owner
+    excludes(['src/test/resources/**', 'src/main/resources/**'])
+  }
+
+  task writeNewPom { doLast {
+    pom {
+      project {
+        inceptionYear project.license_year
+        description project.description
+        url project.website_url
+        licenses {
+          license {
+            name project.license_name
+            url project.license_url
+            distribution "repo"
+          }
+        }
+        developers {
+          developer {
+            id "davidB"
+            name "David Bernard"
+            url "https://github.com/davidB"
+          }
+        }
+      }
+    }.writeTo("$buildDir/newpom.xml")
+  }}
+}

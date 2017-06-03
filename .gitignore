@@ -4,6 +4,10 @@ target/
 dependency-reduced-pom.xml
 pom.xml.versionsBackup
 
+# Gradle
+build/
+.gradle
+
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
