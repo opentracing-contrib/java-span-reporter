@@ -7,8 +7,6 @@ plugins {
   id "com.jfrog.bintray" version "1.7.3"
 }
 
-
-
 allprojects {
   apply plugin: 'license'
   //apply plugin: 'nebula.lint'
@@ -18,8 +16,10 @@ allprojects {
   println("version : '${project.version}'")
   group = "io.opentracing.contrib"
   project.ext.description="OpenTracing Tracer that report traces (on logs, metrics,...)"
-  project.ext.website_url="https://github.com/opentracing-contrib/${project.name}"
-  project.ext.scm_url="https://github.com/opentracing-contrib/${project.name}"
+  project.ext.website_url="https://github.com/opentracing-contrib/${rootProject.name}"
+  project.ext.issue_url="${project.website_url}/issues"
+  project.ext.scm_github_repo="opentracing-contrib/${rootProject.name}"
+  project.ext.scm_url="https://github.com/${project.scm_github_repo}"
   project.ext.license_name="Apache-2.0" // use value of bintray license enum
   project.ext.license_url="https://www.apache.org/licenses/LICENSE-2.0.txt"
   project.ext.license_year=Calendar.getInstance().get(Calendar.YEAR)
@@ -28,7 +28,10 @@ allprojects {
 
 subprojects {
   apply plugin: 'java'
-  apply plugin: 'maven'
+
+  if(!project.name.contains('examples')){
+    apply from: rootProject.file('build-publish.gradle')
+  }
 
   repositories {
     jcenter()
@@ -39,9 +42,28 @@ subprojects {
   targetCompatibility = JavaVersion.VERSION_1_8
   [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
-  task sourcesJar(type: Jar) {
-    from sourceSets.main.allSource
+  javadoc {
+    failOnError = false
+    options.memberLevel = org.gradle.external.javadoc.JavadocMemberLevel.PROTECTED
+    options.docTitle = "${project.name} ${project.version} Javadoc"
+    options.windowTitle = "${project.name} ${project.version} Javadoc"
+    options.header = "<b>${project.name} ${project.version}</b>"
+    options.author = "true"
+    options.use = "true"
+    //disable doclint for JDK8, more quiet output
+    if (JavaVersion.current().isJava8Compatible()){
+        options.addStringOption('Xdoclint:none', '-quiet')
+    }
+  }
+
+  task sourcesJar(type: Jar, dependsOn: classes, description: 'Creates a jar from the source files.') {
     classifier = 'sources'
+    from sourceSets*.allSource
+  }
+
+  task javadocJar(type: Jar, dependsOn: javadoc, description: 'Creates a jar from the javadoc files.') {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
   }
 
   license {
@@ -51,28 +73,5 @@ subprojects {
     ext.license_owner = license_owner
     excludes(['src/test/resources/**', 'src/main/resources/**'])
   }
-
-  task writeNewPom { doLast {
-    pom {
-      project {
-        inceptionYear project.license_year
-        description project.description
-        url project.website_url
-        licenses {
-          license {
-            name project.license_name
-            url project.license_url
-            distribution "repo"
-          }
-        }
-        developers {
-          developer {
-            id "davidB"
-            name "David Bernard"
-            url "https://github.com/davidB"
-          }
-        }
-      }
-    }.writeTo("$buildDir/newpom.xml")
-  }}
 }
+

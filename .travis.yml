@@ -3,6 +3,10 @@ dist: trusty
 env:
   global:
     - GRADLE_USER_HOME=gradle-cache
+    # travis encrypt -r org/repo BINTRAY_USER=...
+    - secure: "kffSAna8Uon7o5nVRq7so3N4JGf2bHpvuaCxr12hIFaOLuVeguz5Nsnoe6ZkxF2g0uPREQDWzfYVRMpDDf9qMT2gFpkdE1EqWcWZS1LxLnC5owoKugzaTNj5ebqOEPbBW5506LG3ClPTkJXCPpr76ddjBmT1isIclwX9g5hBCoKXntdgj9E6DI/UaL0t7x23vbmA6v+j4n2RE3Q86AymNztfNUmLqSbYU1xs1Mon4i771dd/6WvB3S8gj7BMOaVNCCib8qjc1Leol+sFjDkTuturECetQD02bItM644yJHkJk4np6wd8GcySxvF6x552QlOytgsAMknrLrcPc530GGJT0ZnVoTW/V6YoehHGofS5D6BOefgPiylDgnTzn2XNNeFUkvVGIgXL8+5cBg7KQWKP+gL9iHJGbCFiTqvla3YxuMOe5vnLrsNwNzWUWE+Moep3ZFPS0eu2V0112L/mOnoUz6OSnzZeHyrEAlvnsvLUopQihKGz5pw4MC4q3hTuGzkJrEitjz9bZKyMsdohpB9PFcKyOBFgRHZliMjA9u3z+OlbQyV8cnaBvoX7sOoPeESI90RZ+Rg169iPhPMm6u1GnHi0GE8w3kvjtlcypkRFV5V2YuHwmq3AYEcVH4blv1J5ei/INF6Ub7vYc0oiaJqKDAbuspTC+C8Th0/EwZA="
+    # travis encrypt -r org/repo BINTRAY_KEY=...
+    - secure: "GWON95b/LNgHwct31NYnr/Y81/VcyRDrMMOm0TorcGoQYVjpOG6utZ5vzXOu5vPWTBtlGBG3Vwlw07Ch47lfXLOaTp4dLe3hRKTx7b4ntN/WxOclvKC3G+FbrstCgE8+qDDwByGlaRNuVZMXYWzcVfdP80Ex1pAyfznzQlTEl0+gejQIX/kmgq7hmIQ9Uhia7yIyx0FUdXX2eL5dmtBfRHrsNtMn61gHFQ404OxAKdod+RWPseRRrNzC69VXzKPA+qFrw22hzk+yvdHieUEOLujgQAwVZzMqSzlzHTvJRxYNe3s12uz4e3Fq3NhrqtL9IDhJ5dRSCocabU9s0LYy0P5PPnF1Dyc+06aarWDlxHcjRX8VE0ZZGbVd/e0Rq7pbVXunatGfmuS4gi3vpXNGDXOrmNdKZiwdU2mPesPIEDl94nxBx7feJI2dHnAR3cxX/86rvYL/z8QPBqB+4Fy4nd128bl+jBElCnyb2Aoqq6Bh4raOM9I2Hvs0Xoez1ZArgzfiJu1gOfQLLHq+28ZjRI/TosLU4lL+KVfvh1t0tgoB42Mlh6fBcpUUya2R77zjHvLnsdhhOPEC/kpIy2h5LWUzXu3itm4wh1JsTV2z/RfOZ9jauBy8lP35iePGHDABpZcNKa8qfU6XRFs5uT8xLQni1Yq0i5ECyEF21tzkNCE="
 language: java
 jdk:
   - oraclejdk8
@@ -32,6 +36,6 @@ install:
 script:
   - ./gradlew check
 
-#after_success:
-#  - '[ -n "$TRAVIS_TAG" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ] && ./gradlew bintrayUpload || :'
+after_success:
+  - '[ -n "$TRAVIS_TAG" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ] && ./gradlew bintrayUpload || :'
 
