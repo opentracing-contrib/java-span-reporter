@@ -62,7 +62,7 @@ bintray {
     dryRun = false
     pkg {
         repo = 'maven'
-        userOrg = 'davidb'
+        userOrg = 'opentracing'
         name = project.name
         desc = project.description
         websiteUrl = project.website_url
