@@ -88,3 +88,19 @@ tracer = new TracerR(tracer, new CompositeReporter(
   [cov]: https://coveralls.io/github/opentracing-contrib/java-span-reporter?branch=master
   [maven-img]: https://img.shields.io/maven-central/v/io.opentracing.contrib/java-span-reporter.svg?maxAge=2592000
   [maven]: http://search.maven.org/#search%7Cga%7C1%7Cjava-span-reporter
+
+# Build
+
+* build localy
+    ```
+    ./gradlew assemble
+    ````
+* publish to local maven repository
+    ```
+    ./gradlew publishToMavenLocal
+    ````
+* release
+    ```
+    git tag -a "${version}" -m "release"
+    git push --tags
+    ```
