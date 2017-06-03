@@ -37,5 +37,6 @@ script:
   - ./gradlew check
 
 after_success:
-  - '[ -n "$TRAVIS_TAG" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ] && ./gradlew bintrayUpload || :'
+  - 'echo "TRAVIS_TAG: $TRAVIS_TAG" - "TRAVIS_PULL_REQUEST: $TRAVIS_PULL_REQUEST"'
+  - '[ -n "$TRAVIS_TAG" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ] && ./gradlew bintrayUpload'
 
