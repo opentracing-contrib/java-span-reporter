@@ -1,0 +1,84 @@
+//
+// This file is to be applied to some subproject.
+//
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'maven-publish'
+
+// documentation and samples: https://github.com/bintray/gradle-bintray-plugin
+project.ext.bintray_user = project.hasProperty('bintray_user') ? project.property('bintray_user') : System.getenv('BINTRAY_USER')
+project.ext.bintray_key = project.hasProperty('bintray_key') ? project.property('bintray_key') : System.getenv('BINTRAY_KEY')
+
+def pomConfig = {
+  developers {
+    developer {
+      id "davidB"
+      name "David Bernard"
+      url "https://github.com/davidB"
+    }
+  }
+  scm {
+    url project.scm_url
+    connection "scm:git:${project.scm_url}.git"
+    developerConnection "scm:git:${project.scm_url}.git"
+  }
+  issueManagement {
+    system "github"
+    url project.issue_url
+  }
+}
+
+// Create the publication with the pom configuration:
+publishing {
+    publications {
+        MyPublication(MavenPublication) {
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+            groupId project.group
+            artifactId project.name
+            version project.version
+            pom.withXml {
+                def root = asNode()
+                root.appendNode('description', project.description)
+                root.appendNode('name', project.name)
+                root.appendNode('url', project.website_url)
+                root.appendNode('inceptionYear', project.license_year)
+                root.children().last() + pomConfig
+                // could not use the pomConfig to set license,
+                // maybe because the  Node license {...} is associated to the license plugin
+                def lic = root.appendNode('licenses').appendNode('license')
+                lic.appendNode('name', project.license_name)
+                lic.appendNode('url', project.license_url)
+                lic.appendNode('distribution', "repo")
+            }
+        }
+    }
+}
+
+bintray {
+    user = project.bintray_user
+    key = project.bintray_key
+    publications = ['MyPublication']
+    dryRun = false
+    pkg {
+        repo = 'maven'
+        userOrg = 'opentracing'
+        name = project.name
+        desc = project.description
+        websiteUrl = project.website_url
+        issueTrackerUrl = project.issue_url
+        vcsUrl = project.scm_url
+        licenses = [project.license_name]
+        labels = ['open-tracing']
+        publicDownloadNumbers = true
+        githubRepo = project.scm_github_repo
+        githubReleaseNotesFile = 'README.md'
+    }
+}
+
+bintrayUpload.onlyIf {
+  (project.bintray_key != null) &&
+  (version ==~ /\d+\.\d+\.\d+(-[a-zA-Z0-9]+)?/) &&
+  !(version ==~ /.*-dirty/)
+}
+

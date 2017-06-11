@@ -1,4 +1,4 @@
-[![Build Status][ci-img]][ci] [![Released Version][maven-img]][maven]
+[![Build Status][ci-img]][ci] [![Coverage Status][cov-img]][cov] [![Released Version][maven-img]][maven]
 
 # SpanReporter for Java
 SpanReporter forward to backend Tracer and reports trace into Reporter.
@@ -81,3 +81,26 @@ tracer = new TracerR(tracer, new CompositeReporter(
     new DropwizardMetricsReporter(...)
 ));
 ```
+
+# Build
+
+* build localy
+    ```
+    ./gradlew assemble
+    ````
+* publish to local maven repository
+    ```
+    ./gradlew publishToMavenLocal
+    ````
+* release
+    ```
+    git tag -a "${version}" -m "release"
+    git push --tags
+    ```
+
+  [ci-img]: https://travis-ci.org/opentracing-contrib/java-span-reporter.svg?branch=master
+  [ci]: https://travis-ci.org/opentracing-contrib/java-span-reporter
+  [cov-img]: https://coveralls.io/repos/github/opentracing-contrib/java-span-reporter/badge.svg?branch=master
+  [cov]: https://coveralls.io/github/opentracing-contrib/java-span-reporter?branch=master
+  [maven-img]: https://img.shields.io/maven-central/v/io.opentracing.contrib/java-span-reporter.svg?maxAge=2592000
+  [maven]: http://search.maven.org/#search%7Cga%7C1%7Cjava-span-reporter

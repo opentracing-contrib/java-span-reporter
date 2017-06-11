@@ -1,30 +1,29 @@
-sudo: required
+sudo: false
 dist: trusty
-
+env:
+  global:
+    - GRADLE_USER_HOME=gradle-cache
+    # travis encrypt -r org/repo BINTRAY_USER=...
+    - secure: "BX8IzFIg+3iPz3arjcfEU5iDPp9euFptpSBhrLor7J0etHtQ2QyqVQLsJ8B3w8udy8UhCZxnAe0NObzCI7NFf/2jgSN6y+T0E/dYDT3LSQk9sB9SpP853VgIsihuiYFNS9pBs1DgjSh4o3wkUt8KZA+XFowZ6AJrFnYE25J3o9O80CCO0eQP6xPjjhyuVQlsjzTht7q1ApiQOza5ux3cnMUCZOAEaB81MxK4yQ/98h4IBlIKe2gvLGBaN+YYsOnd1Mte8kGyuBnUdz7Nb1339xMBkUcEi4a6Tz9Z4NDS99K1dfLWLR3ef1bYDP8N4CVKS4ZJgavdc6BykOGEMEWae8tFqnMUCHJjUuXWMN4EFpi1HUY2eK43TI3wPVM8h+YsTvzb/KMfiLtBttkTjPksHohoeYK9IGpxuggkR/A1FPf8MNv8vb8h2hl0Q1mbCHdPCa1jtoIO94yaZZXzN3gb3MBNENwXh8q8TVwsvRr9UvEO8+/4ta8V7IEqlCj6+vNQryqQAO0KiwxNnWfo3XFzfSCnBQ5/l66uwW3SMmJ4gI9oh1B0tzhunoeMSegdutcbWPOYxdBEOX3AKwfpDCqyd9eBrTTmFmdrwuxvuQR842jK9fzEhzrPhTA/pbNcZRpHuzb0ny3iIP3r4UGg/TS7f8btCJG713XbcOLbozxC0KQ="
+    # travis encrypt -r org/repo BINTRAY_KEY=...
+    - secure: "Zq32wGOUirE07jQlB3n5Yr+x3rBfFNnD5oAFUXDpuxhHyER8qS5cIiNQFOVPI9yeWQyQN3iRvmUICu3/Lz7k+LPlMl2xI98yrLQSNeG1pTgRHt9yblWx7pYNomrEsHV7AZ7j/5/Ry7LU9mVQvKm+9nZAZz7sTcDjzItH7U73pkHaZpFaN9zsvOE8i85ts82OwhmyEll7xLCf1trYjTAqxyj7HvdSE5d2imbGlm+6rkbd6nb0qHbdfpJbpMuhUNdscNeNvtHr2x1hLt3s95swaSOGMczfNfFIjpTjisiXv4iEjvVBhN7x7tQJS4FBiKvAkvUJFdPs0AMsr61Zplaytt3CefABrM9s1gMYONxjltv2jfF99N/s7tg92kX3FTZDjjvQApqsQFGL1AxNf9vFjbiCuyBexm8Nj0m/KdxN7nKF5ePTtPX2FIbm+0QX3Xi2Nz7mr7GwV12TIMADo65SZKvSmBcSbt09ryEkVgHqDBRyq1JyD/ubaKr7MgMIaWk3/sIpIaSaqdE6dN2ZDs+70OZ+Klda24b4bQhBCSBgcY7FnqI/uFwJ9zaETc+QbkSeV7xdgUPdX+vxzNATCa1INsCXVMxKI7QWYGQxN9nTMRK1we2sFNwIh+1a5jotLbtRC+SsbQ5oyyWGuEoVShtWisVRP4K07dRoMIJKVZFfg2w="
 language: java
 jdk:
-- oraclejdk8
+  - oraclejdk8
 
 cache:
   directories:
-  - $HOME/.m2/repository
-
-before_install:
-  # allocate commits to CI, not the owner of the deploy key
-  - git config user.name "opentracingci"
-  - git config user.email "opentracingci+opentracing@googlegroups.com"
-
-  # setup https authentication credentials, used by ./mvnw release:prepare
-  - git config credential.helper "store --file=.git/credentials"
-  - echo "https://$GH_TOKEN:@github.com" > .git/credentials
+    - gradle-cache
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
 
 install:
-  # Override default travis to use the maven wrapper
-  - ./mvnw install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+  - ./gradlew assemble
 
 script:
-  - ./travis/publish.sh
+  - ./gradlew check
 
-branches:
-  except:
-    - /^[0-9]/
+after_success:
+  - 'echo "TRAVIS_TAG: $TRAVIS_TAG" - "TRAVIS_PULL_REQUEST: $TRAVIS_PULL_REQUEST"'
+  - '[ -n "$TRAVIS_TAG" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ] && ./gradlew bintrayUpload'
+

@@ -1,0 +1,35 @@
+project.ext.description = "SpanReporter (Examples)"
+
+def v_logback="1.1.3"
+def v_brave="4.0.6"
+def v_hawkular="0.13.0.Final"
+
+dependencies {
+  compile "io.opentracing:opentracing-api:${v_opentracing}"
+  compile "io.opentracing:opentracing-noop:${v_opentracing}"
+  compile project(":span-reporter")
+  compile project(":span-reporter-slf4j")
+  compile "javax.inject:javax.inject:1"
+  compile "com.google.inject:guice:4.0"
+
+  // Logback
+  compile "ch.qos.logback:logback-core:${v_logback}"
+  "ch.qos.logback:logback-classic:${v_logback}"
+
+  // Hawkular
+  compile "org.hawkular.apm:hawkular-apm-client-opentracing:${v_hawkular}"
+  compile "org.hawkular.apm:hawkular-apm-trace-publisher-rest-client:${v_hawkular}"
+
+  // Brave / Zipkin
+  // compile "io.zipkin.brave:brave-mysql:${v_brave}"
+  // compile "io.zipkin.brave:brave-okhttp:${v_brave}"
+  // compile "io.zipkin.brave:brave-p6spy:${v_brave}"
+  compile "io.zipkin.reporter:zipkin-sender-okhttp3:0.6.12"
+  compile "io.zipkin.brave:brave:${v_brave}"
+  compile "io.opentracing.brave:brave-opentracing:0.18.1"
+}
+
+task run(type:JavaExec) {
+  main = System.getProperty("exec.mainClass") ?: "examples.Sample01"
+  classpath = sourceSets.test.runtimeClasspath
+}

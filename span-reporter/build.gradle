@@ -1,0 +1,4 @@
+
+dependencies {
+  compile "io.opentracing:opentracing-api:${v_opentracing}"
+}

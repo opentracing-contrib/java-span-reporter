@@ -1,0 +1,2 @@
+include 'span-reporter', 'span-reporter-examples', 'span-reporter-slf4j'
+
