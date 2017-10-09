@@ -14,7 +14,7 @@ dependencies {
 
   // Logback
   compile "ch.qos.logback:logback-core:${v_logback}"
-  "ch.qos.logback:logback-classic:${v_logback}"
+  compile "ch.qos.logback:logback-classic:${v_logback}"
 
   // Hawkular
   compile "org.hawkular.apm:hawkular-apm-client-opentracing:${v_hawkular}"

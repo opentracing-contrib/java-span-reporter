@@ -13,6 +13,8 @@
  */
 package io.opentracing.contrib.reporter;
 
+import io.opentracing.ActiveSpan;
+import io.opentracing.Span;
 import io.opentracing.SpanContext;
 import io.opentracing.Tracer;
 import io.opentracing.propagation.Format;
@@ -43,5 +45,15 @@ public class TracerR implements Tracer {
     @Override
     public <C> SpanContext extract(Format<C> format, C c) {
         return wrapped.extract(format, c);
+    }
+
+    @Override
+    public ActiveSpan activeSpan() {
+        return wrapped.activeSpan();
+    }
+
+    @Override
+    public ActiveSpan makeActive(Span span) {
+        return wrapped.makeActive(span);
     }
 }

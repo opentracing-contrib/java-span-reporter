@@ -14,7 +14,6 @@
 package io.opentracing.contrib.reporter;
 
 import io.opentracing.ActiveSpan;
-import io.opentracing.BaseSpan;
 import io.opentracing.Span;
 import io.opentracing.SpanContext;
 
@@ -23,11 +22,11 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-class SpanR extends SpanData implements Span {
-    private Span wrapped;
-    private final Reporter reporter;
+class ActiveSpanR extends SpanData implements ActiveSpan {
+    private ActiveSpan wrapped;
+    protected final Reporter reporter;
 
-    public SpanR(Span wrapped, Reporter reporter, String spanId, String operationName, Map<String,Object> tags, Map<String, String> references) {
+    public ActiveSpanR(ActiveSpan wrapped, Reporter reporter, String spanId, String operationName, Map<String,Object> tags, Map<String, String> references) {
         this.reporter = reporter;
         this.wrapped = wrapped;
         this.spanId = spanId;
@@ -56,68 +55,73 @@ class SpanR extends SpanData implements Span {
     }
 
     @Override
-    public void finish() {
-        wrapped.finish();
+    public void deactivate() {
+        wrapped.deactivate();
+    }
+
+    @Override
+    public void close() {
+        wrapped.close();
         reporter.finish(now(), this);
     }
 
     @Override
-    public void finish(long l) {
-        wrapped.finish(l);
-        reporter.finish(ts(l), this);
+    public Continuation capture() {
+        //FIXME Continuation should be Wrapped to return the correct ActiveSpan
+        return wrapped.capture();
     }
 
     @Override
-    public Span setTag(String s, boolean b) {
+    public ActiveSpan setTag(String s, boolean b) {
         wrapped = wrapped.setTag(s, b);
         this.tags.put(s, b);
         return this;
     }
 
     @Override
-    public Span setTag(String s, String s1) {
+    public ActiveSpan setTag(String s, String s1) {
         wrapped = wrapped.setTag(s, s1);
         this.tags.put(s, s1);
         return this;
     }
 
     @Override
-    public Span setTag(String s, Number number) {
+    public ActiveSpan setTag(String s, Number number) {
         wrapped = wrapped.setTag(s, number);
         this.tags.put(s, number);
         return this;
     }
 
     @Override
-    public Span log(Map<String, ?> map) {
+    public ActiveSpan log(Map<String, ?> map) {
         wrapped = wrapped.log(map);
         toLogger(now(), map);
         return this;
     }
 
     @Override
-    public Span log(long l, Map<String, ?> map) {
+    public ActiveSpan log(long l, Map<String, ?> map) {
         wrapped = wrapped.log(l, map);
         toLogger(ts(l), map);
         return this;
     }
 
     @Override
-    public Span log(String event) {
+    public ActiveSpan log(String event) {
         wrapped = wrapped.log(event);
         toLogger(now(), Collections.singletonMap("event", event));
         return this;
     }
 
     @Override
-    public Span log(long l, String event) {
+    public ActiveSpan log(long l, String event) {
         wrapped.log(l, event);
         toLogger(ts(l), Collections.singletonMap("event", event));
         return this;
     }
 
     @Override
-    public Span setBaggageItem(String s, String s1) {
+    public ActiveSpan setBaggageItem(String s, String s1) {
         wrapped = wrapped.setBaggageItem(s, s1);
         return this;
     }
@@ -128,7 +132,7 @@ class SpanR extends SpanData implements Span {
     }
 
     @Override
-    public SpanR setOperationName(String s) {
+    public ActiveSpan setOperationName(String s) {
         wrapped = wrapped.setOperationName(s);
         this.operationName = s;
         return this;
@@ -136,7 +140,7 @@ class SpanR extends SpanData implements Span {
 
     @Override
     @Deprecated
-    public SpanR log(String eventName, Object payload) {
+    public ActiveSpan log(String eventName, Object payload) {
         wrapped = wrapped.log(eventName, payload);
         toLogger(now(), Collections.singletonMap(eventName, payload));
         return this;
@@ -144,7 +148,7 @@ class SpanR extends SpanData implements Span {
 
     @Override
     @Deprecated
-    public SpanR log(long l, String eventName, Object payload) {
+    public ActiveSpan log(long l, String eventName, Object payload) {
         wrapped = wrapped.log(l, eventName, payload);
         toLogger(ts(l), Collections.singletonMap(eventName, payload));
         return this;
