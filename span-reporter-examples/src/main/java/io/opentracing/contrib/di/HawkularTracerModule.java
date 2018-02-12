@@ -15,7 +15,6 @@ package io.opentracing.contrib.di;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
-import io.opentracing.NoopTracerFactory;
 import io.opentracing.Tracer;
 import org.hawkular.apm.api.utils.PropertyUtil;
 import org.hawkular.apm.client.api.recorder.BatchTraceRecorder;

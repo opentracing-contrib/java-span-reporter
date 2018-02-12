@@ -13,15 +13,16 @@
  */
 package io.opentracing.contrib.reporter.slf4j;
 
-import io.opentracing.NoopTracerFactory;
 import io.opentracing.contrib.reporter.TracerR;
+import io.opentracing.mock.MockTracer;
+import io.opentracing.util.AutoFinishScopeManager;
 import org.slf4j.LoggerFactory;
 
 /**
  * A TracerR with a zero args Constructor and default configuration.
  * It's the implementation use by ServiceLoader (META-INF/services/io.opentracing.Tracer)
  * <code>
- *    new TracerR(NoopTracerFactory.create(), new Slf4jReporter(LoggerFactory.getLogger("tracer")));
+ *    new TracerR(new MockTracer(), new Slf4jReporter(LoggerFactory.getLogger("tracer"), true), new AutoFinishScopeManager());
  * </code>
  */
 public final class DefaultLoggerTracer extends TracerR {
@@ -30,7 +31,7 @@ public final class DefaultLoggerTracer extends TracerR {
      * No args constructor used by Service Loader
      */
     public DefaultLoggerTracer() {
-        super(NoopTracerFactory.create(), new Slf4jReporter(LoggerFactory.getLogger("tracer"), true));
+        super(new MockTracer(), new Slf4jReporter(LoggerFactory.getLogger("tracer"), true), new AutoFinishScopeManager());
     }
 
 }

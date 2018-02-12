@@ -13,8 +13,6 @@
  */
 package io.opentracing.contrib.reporter;
 
-import io.opentracing.ActiveSpan;
-import io.opentracing.BaseSpan;
 import io.opentracing.Span;
 import io.opentracing.SpanContext;
 
@@ -131,22 +129,6 @@ class SpanR extends SpanData implements Span {
     public SpanR setOperationName(String s) {
         wrapped = wrapped.setOperationName(s);
         this.operationName = s;
-        return this;
-    }
-
-    @Override
-    @Deprecated
-    public SpanR log(String eventName, Object payload) {
-        wrapped = wrapped.log(eventName, payload);
-        toLogger(now(), Collections.singletonMap(eventName, payload));
-        return this;
-    }
-
-    @Override
-    @Deprecated
-    public SpanR log(long l, String eventName, Object payload) {
-        wrapped = wrapped.log(l, eventName, payload);
-        toLogger(ts(l), Collections.singletonMap(eventName, payload));
         return this;
     }
 

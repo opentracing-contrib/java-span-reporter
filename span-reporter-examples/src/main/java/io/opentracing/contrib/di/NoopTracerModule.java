@@ -15,8 +15,8 @@ package io.opentracing.contrib.di;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
-import io.opentracing.NoopTracerFactory;
 import io.opentracing.Tracer;
+import io.opentracing.noop.NoopTracerFactory;
 
 import javax.inject.Named;
 import javax.inject.Singleton;

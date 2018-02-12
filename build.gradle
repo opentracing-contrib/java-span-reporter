@@ -4,7 +4,7 @@ plugins {
 }
 
 allprojects {
-  apply plugin: 'license'
+//  apply plugin: 'license'
 
   project.version = "git describe --always --dirty".execute().text.trim()
   println("version : '${project.version}'")

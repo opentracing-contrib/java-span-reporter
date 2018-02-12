@@ -23,14 +23,17 @@ public class SpanBuilderR implements Tracer.SpanBuilder {
     private static final String BAGGAGE_SPANID_KEY = "reporter.spanId";
     private Tracer.SpanBuilder wrapped;
     private Reporter reporter;
+    private ScopeManager scopeManager;
     private final Map<String, Object> tags = new LinkedHashMap<>();
     private final Map<String, String> references = new LinkedHashMap<>();
     private String operationName;
 
-    SpanBuilderR(Tracer.SpanBuilder wrapped, Reporter reporter, String operationName){
+
+    SpanBuilderR(Tracer.SpanBuilder wrapped, Reporter reporter, String operationName, ScopeManager scopeManager){
         this.wrapped = wrapped;
         this.reporter = reporter;
         this.operationName = operationName;
+        this.scopeManager = scopeManager;
     }
 
     String findSpanId(SpanContext context) {
@@ -48,14 +51,14 @@ public class SpanBuilderR implements Tracer.SpanBuilder {
     }
 
     @Override
-    public Tracer.SpanBuilder asChildOf(BaseSpan<?> parent) {
+    public Tracer.SpanBuilder asChildOf(Span parent) {
         return addReference(References.CHILD_OF, parent.context());
     }
 
     //FIXME manage reference to parent
     @Override
     public Tracer.SpanBuilder addReference(String s, SpanContext spanContext) {
-        wrapped = wrapped.addReference(s, spanContext);
+        wrapped.addReference(s, spanContext);
         references.put(s, findSpanId(spanContext));
         return this;
     }
@@ -94,14 +97,12 @@ public class SpanBuilderR implements Tracer.SpanBuilder {
         return this;
     }
 
-    //FIXME add implicit link to parent
-    //FIXME store Span as active
     @Override
-    public ActiveSpan startActive() {
-        ActiveSpan wspan = wrapped.startActive();
-        String spanId = UUID.randomUUID().toString();
-        wspan.setBaggageItem(BAGGAGE_SPANID_KEY, spanId);
-        return new ActiveSpanR(wspan, reporter, spanId, operationName, tags, references);
+    public Scope startActive(boolean finishSpanOnClose) {
+        return this.scopeManager.activate(this.startManual(), finishSpanOnClose);
+        //String spanId = UUID.randomUUID().toString();
+        //scope.span().setBaggageItem(BAGGAGE_SPANID_KEY, spanId);
+        //return scope;
     }
 
     //FIXME add implicit link to parent
