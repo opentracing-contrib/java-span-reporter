@@ -17,7 +17,7 @@ import java.time.Instant;
 import java.util.Map;
 
 public interface Reporter {
-    void start(Instant timestamp, SpanR span);
-    void finish(Instant timestamp, SpanR span);
-    void log(Instant timestamp, SpanR span, Map<String, ?> fields);
+    void start(Instant timestamp, SpanData span);
+    void finish(Instant timestamp, SpanData span);
+    void log(Instant timestamp, SpanData span, Map<String, ?> fields);
 }

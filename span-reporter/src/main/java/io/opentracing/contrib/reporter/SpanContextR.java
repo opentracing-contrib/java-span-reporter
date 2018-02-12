@@ -22,14 +22,14 @@ import java.util.Map;
 // * simpler than implements a special Iterable that will add entry for SpanContextR.BAGGAGE_SPANID_KEY
 // * wrapped.context() could be shared by several wrapped span
 class SpanContextR implements SpanContext {
-    protected final SpanR span;
+    protected final SpanData span;
 
-    SpanContextR(SpanR span) {
-        this.span = span;
+    SpanContextR(SpanData spanData) {
+        this.span = spanData;
     }
 
     @Override
     public Iterable<Map.Entry<String, String>> baggageItems() {
-        return span.wrapped.context().baggageItems();
+        return span.context().baggageItems();
     }
 }

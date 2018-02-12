@@ -35,7 +35,7 @@ public class CompositeReporter implements Reporter {
     }
 
     @Override
-    public void start(Instant ts, SpanR span) {
+    public void start(Instant ts, SpanData span) {
         for(Reporter r: reporters) {
             try {
                 r.start(ts, span);
@@ -46,7 +46,7 @@ public class CompositeReporter implements Reporter {
     }
 
     @Override
-    public void finish(Instant ts, SpanR span) {
+    public void finish(Instant ts, SpanData span) {
         for(Reporter r: reporters) {
             try {
                 r.finish(ts, span);
@@ -57,7 +57,7 @@ public class CompositeReporter implements Reporter {
     }
 
     @Override
-    public void log(Instant ts, SpanR span, Map<String, ?> fields) {
+    public void log(Instant ts, SpanData span, Map<String, ?> fields) {
         for(Reporter r: reporters) {
             try {
                 r.log(ts, span, fields);

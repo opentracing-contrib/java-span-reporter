@@ -13,35 +13,30 @@
  */
 package io.opentracing.contrib.reporter;
 
-import io.opentracing.References;
-import io.opentracing.Span;
-import io.opentracing.SpanContext;
-import io.opentracing.Tracer;
+import io.opentracing.*;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 
 public class SpanBuilderR implements Tracer.SpanBuilder {
-    private static final String BAGGAGE_SPANID_KEY = "log.spanId";
+    private static final String BAGGAGE_SPANID_KEY = "reporter.spanId";
     private Tracer.SpanBuilder wrapped;
     private Reporter reporter;
+    private ScopeManager scopeManager;
     private final Map<String, Object> tags = new LinkedHashMap<>();
     private final Map<String, String> references = new LinkedHashMap<>();
     private String operationName;
 
-    SpanBuilderR(Tracer.SpanBuilder wrapped, Reporter reporter, String operationName){
+
+    SpanBuilderR(Tracer.SpanBuilder wrapped, Reporter reporter, String operationName, ScopeManager scopeManager){
         this.wrapped = wrapped;
         this.reporter = reporter;
         this.operationName = operationName;
+        this.scopeManager = scopeManager;
     }
 
     String findSpanId(SpanContext context) {
-        if (context instanceof SpanContextR) {
-            return ((SpanContextR) context).span.spanId;
-        }
-        // using BAGGAGE_SPANID_KEY is a fallback
-        // it is not fully reliable because several wrapped spans can share context's baggageItems
         for (Map.Entry<String,String> kv: context.baggageItems()) {
             if (BAGGAGE_SPANID_KEY.equals(kv.getKey())) {
                 return kv.getValue();
@@ -52,22 +47,26 @@ public class SpanBuilderR implements Tracer.SpanBuilder {
 
     @Override
     public Tracer.SpanBuilder asChildOf(SpanContext spanContext) {
-        wrapped = wrapped.asChildOf(spanContext);
-        references.put(References.CHILD_OF, findSpanId(spanContext));
-        return this;
+        return addReference(References.CHILD_OF, spanContext);
     }
 
     @Override
-    public Tracer.SpanBuilder asChildOf(Span span) {
-        wrapped = wrapped.asChildOf(span);
-        references.put(References.CHILD_OF, findSpanId(span.context()));
-        return this;
+    public Tracer.SpanBuilder asChildOf(Span parent) {
+        return addReference(References.CHILD_OF, parent.context());
     }
 
+    //FIXME manage reference to parent
     @Override
     public Tracer.SpanBuilder addReference(String s, SpanContext spanContext) {
-        wrapped = wrapped.addReference(s, spanContext);
+        wrapped.addReference(s, spanContext);
         references.put(s, findSpanId(spanContext));
+        return this;
+    }
+
+    //FIXME manage reference to parent
+    @Override
+    public Tracer.SpanBuilder ignoreActiveSpan() {
+        wrapped.ignoreActiveSpan();
         return this;
     }
 
@@ -99,6 +98,23 @@ public class SpanBuilderR implements Tracer.SpanBuilder {
     }
 
     @Override
+    public Scope startActive(boolean finishSpanOnClose) {
+        return this.scopeManager.activate(this.startManual(), finishSpanOnClose);
+        //String spanId = UUID.randomUUID().toString();
+        //scope.span().setBaggageItem(BAGGAGE_SPANID_KEY, spanId);
+        //return scope;
+    }
+
+    //FIXME add implicit link to parent
+    @Override
+    public Span startManual() {
+        Span wspan = wrapped.startManual();
+        String spanId = UUID.randomUUID().toString();
+        wspan.setBaggageItem(BAGGAGE_SPANID_KEY, spanId);
+        return new SpanR(wspan, reporter, spanId, operationName, tags, references);
+    }
+
+    @Override
     public Span start() {
         Span wspan = wrapped.start();
         String spanId = UUID.randomUUID().toString();
@@ -106,8 +122,4 @@ public class SpanBuilderR implements Tracer.SpanBuilder {
         return new SpanR(wspan, reporter, spanId, operationName, tags, references);
     }
 
-    @Override
-    public Iterable<Map.Entry<String, String>> baggageItems() {
-        return wrapped.baggageItems();
-    }
 }

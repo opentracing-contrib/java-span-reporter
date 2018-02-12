@@ -13,11 +13,10 @@
  */
 package examples;
 
-import com.google.common.collect.Collections2;
-import com.google.common.collect.Maps;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import io.opentracing.NoopTracerFactory;
+import io.opentracing.Scope;
+import io.opentracing.ScopeManager;
 import io.opentracing.Span;
 import io.opentracing.Tracer;
 import io.opentracing.contrib.di.LoggerTracerModule;
@@ -27,12 +26,11 @@ import io.opentracing.contrib.reporter.Reporter;
 import io.opentracing.contrib.reporter.TracerR;
 import io.opentracing.contrib.reporter.slf4j.Slf4jReporter;
 import io.opentracing.contrib.util.MapMaker;
+import io.opentracing.mock.MockTracer;
 import io.opentracing.tag.Tags;
-import org.slf4j.Logger;
+import io.opentracing.util.AutoFinishScopeManager;
+import io.opentracing.util.ThreadLocalScopeManager;
 import org.slf4j.LoggerFactory;
-
-import java.util.Dictionary;
-import java.util.LinkedHashMap;
 
 public class Sample01 {
     public static void main(String[] args) throws Exception {
@@ -57,34 +55,38 @@ public class Sample01 {
     }
 
     private static Tracer provideTracerByConstructor() throws Exception {
-        Tracer backend = NoopTracerFactory.create();
+        Tracer backend = new MockTracer();
         Reporter reporter = new Slf4jReporter(LoggerFactory.getLogger("tracer"), true);
-        return new TracerR(backend, reporter);
+        //ScopeManager scopeManager = new ThreadLocalScopeManager();
+        ScopeManager scopeManager = new AutoFinishScopeManager();
+        return new TracerR(backend, reporter, scopeManager);
     }
 
     private static void run0(Tracer tracer) throws Exception {
       // start a span
-      try(Span span0 = tracer.buildSpan("span-0")
+      try(Scope scope0 = tracer.buildSpan("span-0")
               .withTag("description", "top level initial span in the original process")
-              .start()) {
-          Tags.HTTP_URL.set(span0, "/orders"); //span.setTag(Tags.HTTP_URL.getKey(), "/orders")
+              .startActive(true)) {
+          Span span0 = scope0.span();
+          Tags.HTTP_URL.set(span0, "/orders"); //span0.setTag(Tags.HTTP_URL.getKey(), "/orders");
           //Tags.HTTP_METHOD.set(span0, "POST");
           //Tags.PEER_SERVICE.set(span0, "OrderManager");
           //Tags.SPAN_KIND.set(span0, Tags.SPAN_KIND_SERVER);
-          try(Span span1 = tracer.buildSpan("span-1")
-                  .asChildOf(span0)
+          try(Scope scope1 = tracer.buildSpan("span-1")
                   .withTag("description", "the first inner span in the original process")
-                  .start()) {
+                  .startActive(true)) {
+              Span span1 = scope1.span();
 
               // do something
 
               // start another span
 
-              try(Span span2 = tracer.buildSpan("span-2")
+              try(Scope scope2 = tracer.buildSpan("span-2")
                       .asChildOf(span1)
                       .withTag("description", "the second inner span in the original process")
-                      .start()) {
-
+                      .startActive(true)
+                      ) {
+                  Span span2 = scope2.span();
 
                   // do something
                   span2.log("blablabala");

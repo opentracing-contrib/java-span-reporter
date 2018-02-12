@@ -3,7 +3,8 @@ project.ext.description = "SpanReporter For Slf4j"
 dependencies {
   //compile "io.opentracing:opentracing-api:${v_opentracing}"
   compile project(":span-reporter")
-  compile "io.opentracing:opentracing-noop:${v_opentracing}"
+  compile "io.opentracing:opentracing-mock:${v_opentracing}"
+  compile "io.opentracing:opentracing-util:${v_opentracing}"
   compile "org.slf4j:slf4j-api:1.7.25"
   compile "com.fasterxml.jackson.core:jackson-core:2.6.0"
 }

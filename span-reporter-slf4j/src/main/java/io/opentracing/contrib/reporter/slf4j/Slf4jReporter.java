@@ -16,7 +16,7 @@ package io.opentracing.contrib.reporter.slf4j;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import io.opentracing.contrib.reporter.LogLevel;
-import io.opentracing.contrib.reporter.SpanR;
+import io.opentracing.contrib.reporter.SpanData;
 import io.opentracing.contrib.reporter.Reporter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,21 +47,21 @@ public class Slf4jReporter implements Reporter {
     }
 
     @Override
-    public void start(Instant ts, SpanR span) {
+    public void start(Instant ts, SpanData span) {
         if (logger.isTraceEnabled()) {
             logger.trace(toStructuredMessage(ts, "start", span,null));
         }
     }
 
     @Override
-    public void finish(Instant ts, SpanR span) {
+    public void finish(Instant ts, SpanData span) {
         if (logger.isTraceEnabled()) {
             logger.trace(toStructuredMessage(ts, "finish", span, null));
         }
     }
 
     @Override
-    public void log(Instant ts, SpanR span, Map<String, ?> fields) {
+    public void log(Instant ts, SpanData span, Map<String, ?> fields) {
         LogLevel level = LogLevel.INFO;
         try {
             LogLevel level0 = (LogLevel) fields.get(LogLevel.FIELD_NAME);
@@ -100,7 +100,7 @@ public class Slf4jReporter implements Reporter {
         }
     }
 
-    protected String toStructuredMessage(Instant ts, String action, SpanR span, Map<String,?> fields){
+    protected String toStructuredMessage(Instant ts, String action, SpanData span, Map<String,?> fields){
         //return "" + (timestampMicroseconds - startAt);
 
         try {

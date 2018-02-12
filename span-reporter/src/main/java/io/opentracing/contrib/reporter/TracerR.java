@@ -13,26 +13,38 @@
  */
 package io.opentracing.contrib.reporter;
 
-import io.opentracing.SpanContext;
-import io.opentracing.Tracer;
+import io.opentracing.*;
 import io.opentracing.propagation.Format;
 
 public class TracerR implements Tracer {
     final Tracer wrapped;
     final Reporter reporter;
+    final ScopeManager scopeManager;
 
     /**
      * @param wrapped the backend tracer, if you don't want a wrapped tracer use NoopTracerFactory.create()
      * @param reporter the reporter to use (eg )) )
      */
-    public TracerR(Tracer wrapped, Reporter reporter) {
+    public TracerR(Tracer wrapped, Reporter reporter, ScopeManager scopeManager) {
         this.wrapped = wrapped;
         this.reporter = reporter;
+        this.scopeManager = scopeManager;
+    }
+
+    @Override
+    public ScopeManager scopeManager() {
+        return scopeManager;
+    }
+
+    @Override
+    public Span activeSpan() {
+        Scope scope = this.scopeManager.active();
+        return scope == null ? null : scope.span();
     }
 
     @Override
     public SpanBuilder buildSpan(String s) {
-        return new SpanBuilderR(wrapped.buildSpan(s), reporter, s);
+        return new SpanBuilderR(wrapped.buildSpan(s), reporter, s, scopeManager());
     }
 
     @Override
@@ -44,4 +56,5 @@ public class TracerR implements Tracer {
     public <C> SpanContext extract(Format<C> format, C c) {
         return wrapped.extract(format, c);
     }
+
 }

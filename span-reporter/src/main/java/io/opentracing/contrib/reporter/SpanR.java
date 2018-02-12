@@ -21,25 +21,19 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class SpanR implements Span {
-    protected Span wrapped;
+class SpanR extends SpanData implements Span {
+    private Span wrapped;
     private final Reporter reporter;
-
-    public final String spanId;
-    public String operationName;
-    public final Instant startAt;
-    public final Map<String, Object> tags;
-    public final Map<String, String> references;
 
     public SpanR(Span wrapped, Reporter reporter, String spanId, String operationName, Map<String,Object> tags, Map<String, String> references) {
         this.reporter = reporter;
-        this.spanId = spanId;
         this.wrapped = wrapped;
+        this.spanId = spanId;
         this.operationName = operationName;
         this.tags = new ConcurrentHashMap<>(tags);
         this.references = Collections.unmodifiableMap(references);
-        startAt = now();
-        reporter.start(startAt, this);
+        this.startAt = now();
+        reporter.start(this.startAt, this);
     }
 
     protected Instant now(){
@@ -56,7 +50,7 @@ public class SpanR implements Span {
 
     @Override
     public SpanContext context() {
-        return new SpanContextR(this);
+        return wrapped.context();
     }
 
     @Override
@@ -72,29 +66,23 @@ public class SpanR implements Span {
     }
 
     @Override
-    public void close() {
-        wrapped.close();
-        reporter.finish(now(), this);
+    public Span setTag(String s, boolean b) {
+        wrapped = wrapped.setTag(s, b);
+        this.tags.put(s, b);
+        return this;
     }
 
     @Override
     public Span setTag(String s, String s1) {
         wrapped = wrapped.setTag(s, s1);
-        tags.put(s, s1);
-        return this;
-    }
-
-    @Override
-    public Span setTag(String s, boolean b) {
-        wrapped = wrapped.setTag(s, b);
-        tags.put(s, b);
+        this.tags.put(s, s1);
         return this;
     }
 
     @Override
     public Span setTag(String s, Number number) {
         wrapped = wrapped.setTag(s, number);
-        tags.put(s, number);
+        this.tags.put(s, number);
         return this;
     }
 
@@ -138,25 +126,9 @@ public class SpanR implements Span {
     }
 
     @Override
-    public Span setOperationName(String s) {
+    public SpanR setOperationName(String s) {
         wrapped = wrapped.setOperationName(s);
-        operationName = s;
-        return this;
-    }
-
-    @Override
-    @Deprecated
-    public Span log(String eventName, Object payload) {
-        wrapped = wrapped.log(eventName, payload);
-        toLogger(now(), Collections.singletonMap(eventName, payload));
-        return this;
-    }
-
-    @Override
-    @Deprecated
-    public Span log(long l, String eventName, Object payload) {
-        wrapped = wrapped.log(l, eventName, payload);
-        toLogger(ts(l), Collections.singletonMap(eventName, payload));
+        this.operationName = s;
         return this;
     }
 

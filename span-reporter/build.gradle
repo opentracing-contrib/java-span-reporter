@@ -1,4 +1,8 @@
 
 dependencies {
   compile "io.opentracing:opentracing-api:${v_opentracing}"
+  compile "io.opentracing:opentracing-util:${v_opentracing}"
+
+  testCompile "io.opentracing:opentracing-mock:${v_opentracing}"
+
 }
