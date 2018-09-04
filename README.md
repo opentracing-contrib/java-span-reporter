@@ -50,7 +50,7 @@ span.log(MapMaker.fields(LogLevel.FIELD_NAME, LogLevel.WARN, "k0", "v0", "ex", n
 ```
 "io.opentracing.contrib" % "java-span-reporter" % "${span-reporter.version}"
 ```
-* Instantiate the TracerR (For using DI, you can take inspiration from [Guice samples](./src/test/java/io/opentracing/contrib/di)
+* Instantiate the TracerR (For using DI, you can take inspiration from [Guice samples](./span-reporter-examples/src/main/java/io/opentracing/contrib/di)
 ):
 ```java
 tracer = ... // if not backend tracer use NoopTracerFactory.create()
