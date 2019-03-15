@@ -37,9 +37,11 @@ public class SpanBuilderR implements Tracer.SpanBuilder {
     }
 
     String findSpanId(SpanContext context) {
-        for (Map.Entry<String,String> kv: context.baggageItems()) {
-            if (BAGGAGE_SPANID_KEY.equals(kv.getKey())) {
-                return kv.getValue();
+        if (context.baggageItems() != null) {
+            for (Map.Entry<String,String> kv: context.baggageItems()) {
+                if (BAGGAGE_SPANID_KEY.equals(kv.getKey())) {
+                    return kv.getValue();
+                }
             }
         }
         return "";
