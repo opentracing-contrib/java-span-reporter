@@ -28,7 +28,6 @@ import io.opentracing.contrib.reporter.slf4j.Slf4jReporter;
 import io.opentracing.contrib.util.MapMaker;
 import io.opentracing.mock.MockTracer;
 import io.opentracing.tag.Tags;
-import io.opentracing.util.AutoFinishScopeManager;
 import io.opentracing.util.ThreadLocalScopeManager;
 import org.slf4j.LoggerFactory;
 
@@ -58,35 +57,33 @@ public class Sample01 {
         Tracer backend = new MockTracer();
         Reporter reporter = new Slf4jReporter(LoggerFactory.getLogger("tracer"), true);
         //ScopeManager scopeManager = new ThreadLocalScopeManager();
-        ScopeManager scopeManager = new AutoFinishScopeManager();
+        ScopeManager scopeManager = new ThreadLocalScopeManager();
         return new TracerR(backend, reporter, scopeManager);
     }
 
     private static void run0(Tracer tracer) throws Exception {
       // start a span
-      try(Scope scope0 = tracer.buildSpan("span-0")
-              .withTag("description", "top level initial span in the original process")
-              .startActive(true)) {
-          Span span0 = scope0.span();
+      try(Scope scope0 = tracer.activateSpan(tracer.buildSpan("span-0")
+              .withTag("description", "top level initial span in the original process").start())) {
+          Span span0 = tracer.activeSpan();
           Tags.HTTP_URL.set(span0, "/orders"); //span0.setTag(Tags.HTTP_URL.getKey(), "/orders");
           //Tags.HTTP_METHOD.set(span0, "POST");
           //Tags.PEER_SERVICE.set(span0, "OrderManager");
           //Tags.SPAN_KIND.set(span0, Tags.SPAN_KIND_SERVER);
-          try(Scope scope1 = tracer.buildSpan("span-1")
+          try(Scope scope1 = tracer.activateSpan(tracer.buildSpan("span-1")
                   .withTag("description", "the first inner span in the original process")
-                  .startActive(true)) {
-              Span span1 = scope1.span();
+                  .start())) {
+              Span span1 = tracer.activeSpan();
 
               // do something
 
               // start another span
 
-              try(Scope scope2 = tracer.buildSpan("span-2")
+              try(Scope scope2 = tracer.activateSpan(tracer.buildSpan("span-2")
                       .asChildOf(span1)
                       .withTag("description", "the second inner span in the original process")
-                      .startActive(true)
-                      ) {
-                  Span span2 = scope2.span();
+                      .start())) {
+                  Span span2 = tracer.activeSpan();
 
                   // do something
                   span2.log("blablabala");

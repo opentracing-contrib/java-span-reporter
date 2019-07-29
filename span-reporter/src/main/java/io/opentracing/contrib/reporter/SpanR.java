@@ -15,6 +15,7 @@ package io.opentracing.contrib.reporter;
 
 import io.opentracing.Span;
 import io.opentracing.SpanContext;
+import io.opentracing.tag.Tag;
 
 import java.time.Instant;
 import java.util.Collections;
@@ -83,6 +84,13 @@ class SpanR extends SpanData implements Span {
     public Span setTag(String s, Number number) {
         wrapped = wrapped.setTag(s, number);
         this.tags.put(s, number);
+        return this;
+    }
+
+    @Override
+    public <T> Span setTag(final Tag<T> tag, final T value) {
+        wrapped = wrapped.setTag(tag, value);
+        this.tags.put(tag.getKey(), value);
         return this;
     }
 

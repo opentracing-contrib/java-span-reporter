@@ -15,7 +15,7 @@ package io.opentracing.contrib.reporter.slf4j;
 
 import io.opentracing.contrib.reporter.TracerR;
 import io.opentracing.mock.MockTracer;
-import io.opentracing.util.AutoFinishScopeManager;
+import io.opentracing.util.ThreadLocalScopeManager;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -31,7 +31,7 @@ public final class DefaultLoggerTracer extends TracerR {
      * No args constructor used by Service Loader
      */
     public DefaultLoggerTracer() {
-        super(new MockTracer(), new Slf4jReporter(LoggerFactory.getLogger("tracer"), true), new AutoFinishScopeManager());
+        super(new MockTracer(), new Slf4jReporter(LoggerFactory.getLogger("tracer"), true), new ThreadLocalScopeManager());
     }
 
 }

@@ -19,7 +19,7 @@ import io.opentracing.ScopeManager;
 import io.opentracing.Tracer;
 import io.opentracing.contrib.reporter.TracerR;
 import io.opentracing.contrib.reporter.slf4j.Slf4jReporter;
-import io.opentracing.util.AutoFinishScopeManager;
+import io.opentracing.util.ThreadLocalScopeManager;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Named;
@@ -34,7 +34,7 @@ public class LoggerTracerModule extends AbstractModule {
     @Provides
     @Singleton
     protected ScopeManager scopeManager(@Named("backend") Tracer tracer) {
-        return (tracer.scopeManager() == null) ? tracer.scopeManager() : new AutoFinishScopeManager();
+        return (tracer.scopeManager() == null) ? tracer.scopeManager() : new ThreadLocalScopeManager();
     }
 
     @Provides

@@ -14,6 +14,7 @@
 package io.opentracing.contrib.reporter;
 
 import io.opentracing.*;
+import io.opentracing.tag.Tag;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -94,26 +95,16 @@ public class SpanBuilderR implements Tracer.SpanBuilder {
     }
 
     @Override
-    public Tracer.SpanBuilder withStartTimestamp(long l) {
-        wrapped = wrapped.withStartTimestamp(l);
+    public <T> Tracer.SpanBuilder withTag(final Tag<T> tag, final T value) {
+        wrapped = wrapped.withTag(tag, value);
+        tags.put(tag.getKey(), value);
         return this;
     }
 
     @Override
-    public Scope startActive(boolean finishSpanOnClose) {
-        return this.scopeManager.activate(this.startManual(), finishSpanOnClose);
-        //String spanId = UUID.randomUUID().toString();
-        //scope.span().setBaggageItem(BAGGAGE_SPANID_KEY, spanId);
-        //return scope;
-    }
-
-    //FIXME add implicit link to parent
-    @Override
-    public Span startManual() {
-        Span wspan = wrapped.startManual();
-        String spanId = UUID.randomUUID().toString();
-        wspan.setBaggageItem(BAGGAGE_SPANID_KEY, spanId);
-        return new SpanR(wspan, reporter, spanId, operationName, tags, references);
+    public Tracer.SpanBuilder withStartTimestamp(long l) {
+        wrapped = wrapped.withStartTimestamp(l);
+        return this;
     }
 
     @Override
