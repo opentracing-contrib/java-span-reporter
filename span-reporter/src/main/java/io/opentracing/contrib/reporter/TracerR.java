@@ -38,8 +38,12 @@ public class TracerR implements Tracer {
 
     @Override
     public Span activeSpan() {
-        Scope scope = this.scopeManager.active();
-        return scope == null ? null : scope.span();
+        return this.scopeManager.activeSpan();
+    }
+
+    @Override
+    public Scope activateSpan(final Span span) {
+        return this.scopeManager.activate(span);
     }
 
     @Override
@@ -55,6 +59,11 @@ public class TracerR implements Tracer {
     @Override
     public <C> SpanContext extract(Format<C> format, C c) {
         return wrapped.extract(format, c);
+    }
+
+    @Override
+    public void close() {
+        this.wrapped.close();
     }
 
 }
