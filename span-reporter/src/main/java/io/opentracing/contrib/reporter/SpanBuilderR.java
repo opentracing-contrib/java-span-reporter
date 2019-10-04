@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2017 The OpenTracing Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
@@ -21,13 +21,14 @@ import java.util.Map;
 import java.util.UUID;
 
 public class SpanBuilderR implements Tracer.SpanBuilder {
-    private static final String BAGGAGE_SPANID_KEY = "reporter.spanId";
+    static final String BAGGAGE_SPANID_KEY = "reporter.spanId";
     private Tracer.SpanBuilder wrapped;
     private Reporter reporter;
     private ScopeManager scopeManager;
     private final Map<String, Object> tags = new LinkedHashMap<>();
     private final Map<String, String> references = new LinkedHashMap<>();
     private String operationName;
+    private boolean ignoreActiveSpan;
 
 
     SpanBuilderR(Tracer.SpanBuilder wrapped, Reporter reporter, String operationName, ScopeManager scopeManager){
@@ -70,6 +71,7 @@ public class SpanBuilderR implements Tracer.SpanBuilder {
     @Override
     public Tracer.SpanBuilder ignoreActiveSpan() {
         wrapped.ignoreActiveSpan();
+        this.ignoreActiveSpan = true;
         return this;
     }
 
@@ -112,6 +114,13 @@ public class SpanBuilderR implements Tracer.SpanBuilder {
         Span wspan = wrapped.start();
         String spanId = UUID.randomUUID().toString();
         wspan.setBaggageItem(BAGGAGE_SPANID_KEY, spanId);
+
+        // shamelessly copied from io.jaegertracing.internal.JaegerTracer.SpanBuilder#start
+        // of io.jaegertracing:jaeger-core:0.35.5
+        if (references.isEmpty() && !ignoreActiveSpan && null != scopeManager.activeSpan()) {
+            asChildOf(scopeManager.activeSpan());
+        }
+
         return new SpanR(wspan, reporter, spanId, operationName, tags, references);
     }
 
