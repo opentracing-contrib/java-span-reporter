@@ -3,6 +3,9 @@ dependencies {
   compile "io.opentracing:opentracing-api:${v_opentracing}"
   compile "io.opentracing:opentracing-util:${v_opentracing}"
 
+  testCompile gradleTestKit()
+  testCompile 'junit:junit:4.12'
+  testCompile "org.mockito:mockito-core:3.1.+"
   testCompile "io.opentracing:opentracing-mock:${v_opentracing}"
 
 }
