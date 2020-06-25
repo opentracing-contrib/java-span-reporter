@@ -39,7 +39,7 @@ public class SpanBuilderR implements Tracer.SpanBuilder {
     }
 
     String findSpanId(SpanContext context) {
-        if (context.baggageItems() != null) {
+        if (context != null && context.baggageItems() != null) {
             for (Map.Entry<String,String> kv: context.baggageItems()) {
                 if (BAGGAGE_SPANID_KEY.equals(kv.getKey())) {
                     return kv.getValue();
@@ -51,12 +51,16 @@ public class SpanBuilderR implements Tracer.SpanBuilder {
 
     @Override
     public Tracer.SpanBuilder asChildOf(SpanContext spanContext) {
-        return addReference(References.CHILD_OF, spanContext);
+        if(spanContext != null) {
+            return addReference(References.CHILD_OF, spanContext);
+        }
     }
 
     @Override
     public Tracer.SpanBuilder asChildOf(Span parent) {
-        return addReference(References.CHILD_OF, parent.context());
+        if(parent != null) {
+            return addReference(References.CHILD_OF, parent.context());
+        }
     }
 
     //FIXME manage reference to parent
