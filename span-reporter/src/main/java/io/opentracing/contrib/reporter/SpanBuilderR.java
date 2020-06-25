@@ -54,6 +54,7 @@ public class SpanBuilderR implements Tracer.SpanBuilder {
         if(spanContext != null) {
             return addReference(References.CHILD_OF, spanContext);
         }
+        return this;
     }
 
     @Override
@@ -61,6 +62,7 @@ public class SpanBuilderR implements Tracer.SpanBuilder {
         if(parent != null) {
             return addReference(References.CHILD_OF, parent.context());
         }
+        return this;
     }
 
     //FIXME manage reference to parent
