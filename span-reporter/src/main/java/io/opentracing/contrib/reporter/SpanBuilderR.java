@@ -39,10 +39,13 @@ public class SpanBuilderR implements Tracer.SpanBuilder {
     }
 
     String findSpanId(SpanContext context) {
-        if (context != null && context.baggageItems() != null) {
-            for (Map.Entry<String,String> kv: context.baggageItems()) {
-                if (BAGGAGE_SPANID_KEY.equals(kv.getKey())) {
-                    return kv.getValue();
+        if (context != null) {
+            Iterable<Map.Entry<String, String>> baggageItems = context.baggageItems();
+            if (baggageItems != null) {
+                for (Map.Entry<String,String> kv: baggageItems) {
+                    if (BAGGAGE_SPANID_KEY.equals(kv.getKey())) {
+                        return kv.getValue();
+                    }
                 }
             }
         }
@@ -69,7 +72,14 @@ public class SpanBuilderR implements Tracer.SpanBuilder {
     @Override
     public Tracer.SpanBuilder addReference(String s, SpanContext spanContext) {
         wrapped.addReference(s, spanContext);
-        references.put(s, findSpanId(spanContext));
+        String referenceId;
+        if (spanContext != null) {
+            referenceId = spanContext.toSpanId();
+        }
+        else {
+            referenceId = findSpanId(spanContext);
+        }
+        references.put(s, referenceId);
         return this;
     }
 
@@ -118,8 +128,14 @@ public class SpanBuilderR implements Tracer.SpanBuilder {
     @Override
     public Span start() {
         Span wspan = wrapped.start();
-        String spanId = UUID.randomUUID().toString();
-        wspan.setBaggageItem(BAGGAGE_SPANID_KEY, spanId);
+        String spanId;
+        SpanContext spanContext = wspan.context();
+        if (spanContext != null) {
+            spanId = spanContext.toSpanId();
+        } else {
+            spanId = UUID.randomUUID().toString();
+            wspan.setBaggageItem(BAGGAGE_SPANID_KEY, spanId);
+        }
 
         // shamelessly copied from io.jaegertracing.internal.JaegerTracer.SpanBuilder#start
         // of io.jaegertracing:jaeger-core:0.35.5
