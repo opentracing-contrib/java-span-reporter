@@ -66,4 +66,9 @@ public class TracerR implements Tracer {
         this.wrapped.close();
     }
 
+    @Override
+    public String toString() {
+        return "SpanReporterTracer{" + wrapped + '}';
+    }
+
 }
